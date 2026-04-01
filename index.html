@@ -673,7 +673,8 @@
         <div class="preview-box" id="previewBox"></div>
         <div class="btn-row">
           <button class="btn btn-red" onclick="copyRichText()" style="flex:1;">Copy Signature to Clipboard</button>
-          <button class="btn btn-dark" onclick="copyHTML()">Copy HTML</button>
+          <button class="btn btn-dark" onclick="openMobileCopy()">Mobile Copy</button>
+          <button class="btn btn-outline" onclick="copyHTML()">Copy HTML</button>
           <button class="btn btn-outline" onclick="downloadHTML()">Download</button>
         </div>
       </div>
@@ -986,6 +987,66 @@
       } catch (e) {
         showToast('Copy failed — try selecting the preview manually.');
       }
+    }
+
+    function openMobileCopy() {
+      const v = getValues();
+      const html = buildSignatureHTML(v);
+      const page = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copy Your Signature</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', Arial, sans-serif; background: #f5f5f5; min-height: 100vh; }
+  .instructions {
+    background: #b22c2e; color: white; padding: 20px 24px; text-align: center;
+    font-size: 14px; font-weight: 700; line-height: 1.6;
+  }
+  .instructions .steps { font-size: 12px; font-weight: 400; opacity: 0.9; margin-top: 8px; }
+  .signature-area {
+    padding: 24px; background: white; margin: 16px; border: 2px dashed #ddd;
+  }
+  .select-btn {
+    display: block; width: calc(100% - 32px); margin: 0 16px 16px; padding: 16px;
+    background: #28a745; color: white; border: none; font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="instructions">
+    COPY YOUR SIGNATURE
+    <div class="steps">
+      1. Tap "Select Signature" below<br>
+      2. Tap "Copy" when the selection appears<br>
+      3. Paste into Outlook signature settings
+    </div>
+  </div>
+  <button class="select-btn" onclick="selectSig()">TAP HERE TO SELECT SIGNATURE</button>
+  <div class="signature-area" id="sig">${html}</div>
+  <script>
+    function selectSig() {
+      const sig = document.getElementById('sig');
+      const range = document.createRange();
+      range.selectNodeContents(sig);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      // Try to auto-copy
+      try { document.execCommand('copy'); } catch(e) {}
+      document.querySelector('.select-btn').textContent = 'SIGNATURE SELECTED — NOW COPY IT';
+      document.querySelector('.select-btn').style.background = '#14191c';
+    }
+  </script>
+</body>
+</html>`;
+      const blob = new Blob([page], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      showToast('Mobile copy page opened — follow the steps!');
     }
 
     function downloadHTML() {
