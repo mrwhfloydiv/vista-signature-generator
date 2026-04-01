@@ -1027,20 +1027,19 @@
   </div>
   <button class="select-btn" onclick="selectSig()">TAP HERE TO SELECT SIGNATURE</button>
   <div class="signature-area" id="sig">${html}</div>
-  <script>
+  <scr` + `ipt>
     function selectSig() {
-      const sig = document.getElementById('sig');
-      const range = document.createRange();
+      var sig = document.getElementById('sig');
+      var range = document.createRange();
       range.selectNodeContents(sig);
-      const sel = window.getSelection();
+      var sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(range);
-      // Try to auto-copy
       try { document.execCommand('copy'); } catch(e) {}
       document.querySelector('.select-btn').textContent = 'SIGNATURE SELECTED — NOW COPY IT';
       document.querySelector('.select-btn').style.background = '#14191c';
     }
-  </script>
+  </scr` + `ipt>
 </body>
 </html>`;
       const blob = new Blob([page], { type: 'text/html' });
