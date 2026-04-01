@@ -11,40 +11,53 @@
 
     /* ── Header ── */
     .header {
-      background: linear-gradient(135deg, #14191c 0%, #1c2228 100%);
+      background: #000000;
       color: white;
-      padding: 14px 28px;
+      padding: 12px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 60px;
       flex-shrink: 0;
       z-index: 10;
       border-bottom: 3px solid #b22c2e;
     }
-    .header h1 { font-size: 18px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-    .header .subtitle { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+    .header-left { display: flex; flex-direction: column; gap: 6px; }
+    .header h1 { font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+    .header-logo { width: 160px; height: auto; display: block; opacity: 0.4; }
     .help-btn {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 9px 18px;
-      background: rgba(178,44,46,0.15);
-      color: #fff;
-      border: 1px solid rgba(178,44,46,0.4);
+      padding: 10px 20px;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      border: 2px solid rgba(255,255,255,0.15);
       border-radius: 0;
       font-family: 'Montserrat', Arial, sans-serif;
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 10px;
+      font-weight: 800;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1.5px;
+      position: relative;
+      overflow: hidden;
     }
-    .help-btn:hover { background: rgba(178,44,46,0.3); border-color: rgba(178,44,46,0.7); }
+    .help-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #b22c2e;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: -1;
+    }
+    .help-btn:hover::before { transform: scaleX(1); }
+    .help-btn:hover { color: #ffffff; border-color: #b22c2e; box-shadow: 0 0 20px rgba(178,44,46,0.4); }
 
     /* ── App Layout ── */
-    .app { display: flex; height: calc(100vh - 60px); }
+    .app { display: flex; height: calc(100vh - 72px); }
 
     /* ── Left Column ── */
     .col-left {
@@ -55,6 +68,8 @@
       overflow-y: auto;
       padding: 0;
       flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
     }
     .col-left::-webkit-scrollbar { width: 5px; }
     .col-left::-webkit-scrollbar-track { background: transparent; }
@@ -194,23 +209,57 @@
     /* ── Buttons ── */
     .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .btn {
-      padding: 13px 24px;
+      padding: 14px 24px;
       border: none;
       border-radius: 0;
       font-family: 'Montserrat', Arial, sans-serif;
       font-size: 11px;
       font-weight: 800;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       text-transform: uppercase;
       letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
     }
-    .btn-red { background: #b22c2e; color: white; }
-    .btn-red:hover { background: #8f2325; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(178,44,46,0.3); }
-    .btn-dark { background: #14191c; color: white; }
-    .btn-dark:hover { background: #2a3038; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    .btn-outline { background: white; color: #555; border: 2px solid #ddd; }
-    .btn-outline:hover { background: #fafafa; border-color: #999; color: #333; }
+    .btn-red {
+      background: #b22c2e;
+      color: white;
+      box-shadow: 0 2px 8px rgba(178,44,46,0.2);
+    }
+    .btn-red:hover {
+      background: #d4343a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(178,44,46,0.4);
+      letter-spacing: 2px;
+    }
+    .btn-red:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(178,44,46,0.2); }
+    .btn-red.copied {
+      background: #28a745 !important;
+      box-shadow: 0 8px 24px rgba(40,167,69,0.4) !important;
+    }
+    .btn-dark {
+      background: #14191c;
+      color: white;
+      border: 2px solid #14191c;
+    }
+    .btn-dark:hover {
+      background: #2a3038;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+    .btn-outline {
+      background: white;
+      color: #555;
+      border: 2px solid #ddd;
+    }
+    .btn-outline:hover {
+      background: #14191c;
+      color: white;
+      border-color: #14191c;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
 
     /* ── Employee Cards ── */
     .emp-grid {
@@ -311,13 +360,12 @@
     .drawer.open { transform: translateX(0); }
     .drawer-header {
       padding: 22px 28px;
-      background: linear-gradient(135deg, #14191c 0%, #1c2228 100%);
+      background: #b22c2e;
       color: white;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
-      border-bottom: 3px solid #b22c2e;
     }
     .drawer-header h2 { font-size: 15px; font-weight: 800; margin: 0; letter-spacing: 0.5px; }
     .drawer-close {
@@ -325,16 +373,16 @@
       height: 32px;
       border-radius: 50%;
       border: none;
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.2);
       color: white;
       font-size: 18px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s;
+      transition: all 0.2s;
     }
-    .drawer-close:hover { background: rgba(255,255,255,0.3); }
+    .drawer-close:hover { background: rgba(255,255,255,0.4); transform: rotate(90deg); }
     .drawer-body {
       padding: 24px;
       overflow-y: auto;
@@ -494,9 +542,9 @@
 
   <!-- ════════════ HEADER ════════════ -->
   <div class="header">
-    <div>
+    <div class="header-left">
       <h1>Email Signature Generator</h1>
-      <div class="subtitle">Vista Site Selection</div>
+      <img src="https://i.imgur.com/0P3iYD9.png" alt="Vista Site Selection" class="header-logo">
     </div>
     <button class="help-btn" onclick="toggleDrawer()">
       <span style="font-size:16px;">&#9432;</span> How to Install
@@ -522,7 +570,7 @@
           </div>
           <div class="form-group">
             <label>Title</label>
-            <input type="text" id="title" value="SVP, Communications &amp; Strategy" oninput="updatePreview()">
+            <input type="text" id="title" value="Senior Vice President, Strategy &amp; Communications" oninput="updatePreview()">
           </div>
           <div class="form-group">
             <label>Phone Number</label>
@@ -601,6 +649,11 @@
           </div>
           <p style="font-size:9px;color:#999;margin-top:-10px;margin-bottom:14px;letter-spacing:0.5px;">Height 0 = auto (fits content). Set a value to force a minimum height.</p>
         </div>
+      </div>
+
+      <!-- Built By Watermark -->
+      <div style="margin-top:auto;padding:16px 24px;opacity:0.3;">
+        <img src="https://i.imgur.com/VMsk8Iw.png" alt="" style="height:24px;filter:grayscale(1);">
       </div>
 
     </div>
@@ -883,17 +936,26 @@
     async function copyRichText() {
       const v = getValues();
       const html = buildSignatureHTML(v);
+      const btn = document.querySelector('.btn-red');
+      const originalText = btn.textContent;
       try {
         const htmlBlob = new Blob([html], { type: 'text/html' });
         const textBlob = new Blob([html], { type: 'text/plain' });
         await navigator.clipboard.write([
           new ClipboardItem({ 'text/html': htmlBlob, 'text/plain': textBlob })
         ]);
+        // Flash green
+        btn.classList.add('copied');
+        btn.textContent = 'COPIED!';
         showToast('Signature copied! Paste into Outlook.');
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = originalText; }, 2000);
       } catch (err) {
-        navigator.clipboard.writeText(html).then(() =>
-          showToast('Copied as HTML code.')
-        );
+        navigator.clipboard.writeText(html).then(() => {
+          btn.classList.add('copied');
+          btn.textContent = 'COPIED!';
+          showToast('Copied as HTML code.');
+          setTimeout(() => { btn.classList.remove('copied'); btn.textContent = originalText; }, 2000);
+        });
       }
     }
 
@@ -924,7 +986,7 @@
       { name: "Andrea Dishler", title: "Senior Vice President, Project Management", email: "adishler@vistasiteselection.com", phone: "202.448.1492", linkedin: "https://www.linkedin.com/in/andrea-dishler/" },
       { name: "Janie Hanna", title: "Vice President of Program Management", email: "jhanna@vistasiteselection.com", phone: "440.387.7506", linkedin: "https://www.linkedin.com/in/janie-hanna/" },
       { name: "Taylor Blanks", title: "Program Support Manager", email: "tblanks@vistasiteselection.com", phone: "202.747.5640", linkedin: "https://www.linkedin.com/in/yourfavoriteea-taylorblanks/" },
-      { name: "William Floyd", title: "SVP, Communications & Strategy", email: "whfloyd@vistasiteselection.com", phone: "972.415.9197", linkedin: "https://www.linkedin.com/in/whfiv/" },
+      { name: "William Floyd", title: "Senior Vice President, Strategy & Communications", email: "whfloyd@vistasiteselection.com", phone: "972.415.9197", linkedin: "https://www.linkedin.com/in/whfiv/" },
       { name: "Mac Smith", title: "Data Scientist", email: "tmsmith@vistasiteselection.com", phone: "614.905.6397", linkedin: "https://www.linkedin.com/in/theodoremsmith/" }
     ];
 
