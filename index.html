@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vista Site Selection — Email Signature Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; font-family: 'Montserrat', Arial, sans-serif; background: #0d1117; color: #333; }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #14191c 0%, #1c2228 100%);
+      color: white;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      flex-shrink: 0;
+      z-index: 10;
+      border-bottom: 3px solid #b22c2e;
+    }
+    .header h1 { font-size: 18px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+    .header .subtitle { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+    .help-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      background: rgba(178,44,46,0.15);
+      color: #fff;
+      border: 1px solid rgba(178,44,46,0.4);
+      border-radius: 0;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .help-btn:hover { background: rgba(178,44,46,0.3); border-color: rgba(178,44,46,0.7); }
+
+    /* ── App Layout ── */
+    .app { display: flex; height: calc(100vh - 60px); }
+
+    /* ── Left Column ── */
+    .col-left {
+      width: 400px;
+      min-width: 400px;
+      background: #ffffff;
+      border-right: 1px solid #e8e8e8;
+      overflow-y: auto;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .col-left::-webkit-scrollbar { width: 5px; }
+    .col-left::-webkit-scrollbar-track { background: transparent; }
+    .col-left::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 3px; }
+    .col-left::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+    /* ── Right Column ── */
+    .col-right {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+      background: linear-gradient(180deg, #f5f5f5 0%, #ebebeb 100%);
+    }
+    .col-right::-webkit-scrollbar { width: 5px; }
+    .col-right::-webkit-scrollbar-track { background: transparent; }
+    .col-right::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    .col-right::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+    /* ── Sections in Left Column ── */
+    .section { padding: 22px 24px; border-bottom: 1px solid #f0f0f0; }
+    .section:hover { background: #fafbfc; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      padding: 2px 0;
+    }
+    .section-header h2 {
+      font-size: 12px;
+      font-weight: 800;
+      color: #14191c;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 0;
+    }
+    .section-header .chevron {
+      font-size: 16px;
+      color: #b22c2e;
+      transition: transform 0.25s ease;
+      line-height: 1;
+    }
+    .section-header .chevron.open { transform: rotate(90deg); }
+    .section-body { padding-top: 18px; }
+    .section-body.collapsed { display: none; }
+
+    /* ── Forms ── */
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 9px;
+      font-weight: 800;
+      color: #aaa;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="url"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #e8e8e8;
+      border-radius: 0;
+      font-size: 13px;
+      font-family: 'Montserrat', Arial, sans-serif;
+      transition: all 0.2s;
+      background: #fafbfc;
+    }
+    .form-group input:hover { border-color: #ccc; background: #fff; }
+    .form-group input:focus { outline: none; border-color: #b22c2e; background: #fff; box-shadow: 0 0 0 3px rgba(178,44,46,0.08); }
+    .form-group input[type="color"] {
+      width: 100%;
+      height: 38px;
+      padding: 3px;
+      border: 2px solid #e8e8e8;
+      border-radius: 0;
+      cursor: pointer;
+      background: white;
+    }
+    .form-group input[type="color"]:focus { border-color: #b22c2e; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    /* ── File Picker ── */
+    .file-input-row { display: flex; gap: 6px; align-items: stretch; }
+    .file-input-row input[type="text"] { flex: 1; min-width: 0; font-size: 11px; }
+    .btn-browse {
+      padding: 8px 12px;
+      background: #14191c;
+      color: white;
+      border: none;
+      border-radius: 0;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-size: 9px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-browse:hover { background: #b22c2e; }
+
+    /* ── Right Column Cards ── */
+    .card {
+      background: white;
+      border-radius: 0;
+      padding: 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      margin-bottom: 24px;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .card h3 {
+      font-size: 11px;
+      font-weight: 800;
+      color: #14191c;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #b22c2e;
+    }
+
+    /* ── Preview ── */
+    .preview-box {
+      background: #fafafa;
+      border: 1px solid #e8e8e8;
+      border-radius: 0;
+      padding: 28px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      transition: background 0.3s;
+    }
+
+    /* ── Buttons ── */
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      padding: 13px 24px;
+      border: none;
+      border-radius: 0;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .btn-red { background: #b22c2e; color: white; }
+    .btn-red:hover { background: #8f2325; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(178,44,46,0.3); }
+    .btn-dark { background: #14191c; color: white; }
+    .btn-dark:hover { background: #2a3038; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .btn-outline { background: white; color: #555; border: 2px solid #ddd; }
+    .btn-outline:hover { background: #fafafa; border-color: #999; color: #333; }
+
+    /* ── Employee Cards ── */
+    .emp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+    }
+    .emp-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: #fafbfc;
+      border: 2px solid transparent;
+      border-left: 3px solid #e0e0e0;
+      border-radius: 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .emp-card:hover {
+      border-left-color: #b22c2e;
+      background: #fff;
+      transform: translateX(4px);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .emp-card.active {
+      border-left-color: #b22c2e;
+      background: #fff5f5;
+      border-color: rgba(178,44,46,0.2);
+      border-left-color: #b22c2e;
+      box-shadow: 0 2px 12px rgba(178,44,46,0.1);
+    }
+    .emp-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #14191c, #2a3038);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .emp-name { font-weight: 700; font-size: 12px; color: #14191c; line-height: 1.3; }
+    .emp-title { font-size: 10px; color: #999; margin-top: 2px; line-height: 1.3; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: #14191c;
+      color: white;
+      padding: 14px 32px;
+      border-radius: 0;
+      border-left: 4px solid #b22c2e;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 999;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      letter-spacing: 0.3px;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Help Drawer ── */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .drawer-backdrop.open { opacity: 1; pointer-events: all; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 460px;
+      max-width: 90vw;
+      height: 100vh;
+      background: white;
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      padding: 22px 28px;
+      background: linear-gradient(135deg, #14191c 0%, #1c2228 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      border-bottom: 3px solid #b22c2e;
+    }
+    .drawer-header h2 { font-size: 15px; font-weight: 800; margin: 0; letter-spacing: 0.5px; }
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    .drawer-close:hover { background: rgba(255,255,255,0.3); }
+    .drawer-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .drawer-body h3 { font-size: 14px; font-weight: 700; color: #14191c; margin: 20px 0 10px 0; }
+    .drawer-body h3:first-child { margin-top: 0; }
+    .drawer-body ol { padding-left: 18px; }
+    .drawer-body li { margin-bottom: 12px; font-size: 13px; line-height: 1.6; color: #555; }
+    .drawer-body li b { color: #14191c; }
+    .drawer-body code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 0;
+      font-size: 12px;
+      font-family: 'Consolas', monospace;
+    }
+    .drawer-body .tip {
+      background: #f0f8ff;
+      border-left: 4px solid #007bff;
+      padding: 12px 16px;
+      border-radius: 0;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 16px;
+      color: #555;
+    }
+    .drawer-body .tip b { color: #14191c; }
+
+    /* ── Note Box ── */
+    .note {
+      background: #f8f5ee;
+      border-left: 3px solid #c4a035;
+      border-radius: 0;
+      padding: 10px 14px;
+      font-size: 10px;
+      line-height: 1.6;
+      margin-bottom: 14px;
+      color: #7a6a3a;
+    }
+    .note b { color: #5a4d2a; }
+    .note-danger {
+      background: #b22c2e;
+      border-left: none;
+      color: rgba(255,255,255,0.9);
+      padding: 12px 16px;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      animation: pulse-danger 2.5s ease-in-out infinite;
+      letter-spacing: 0.3px;
+    }
+    .note-danger b { color: #ffffff; }
+    @keyframes pulse-danger {
+      0%, 100% { background: #b22c2e; }
+      50% { background: #8f2325; }
+    }
+
+    /* ── Preview Highlight (Cyan overlay) ── */
+    .preview-highlight {
+      position: relative;
+    }
+    .preview-highlight::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: rgba(0, 210, 255, 0.15);
+      border: 2px solid rgba(0, 210, 255, 0.6);
+      border-radius: 0;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+
+    /* ── Preview Mode Toggle ── */
+    .mode-toggle {
+      display: flex;
+      gap: 0;
+      border-radius: 0;
+      overflow: hidden;
+      border: 2px solid #e0e0e0;
+      margin-bottom: 16px;
+    }
+    .mode-btn {
+      padding: 7px 18px;
+      border: none;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+      background: #f0f0f0;
+      color: #aaa;
+    }
+    .mode-btn:hover { color: #666; }
+    .mode-btn.active { background: #14191c; color: white; }
+    .preview-box.dark-mode {
+      background: #1a1a1a;
+    }
+    /* Simulate Outlook dark mode color inversion */
+    .preview-box.dark-mode a,
+    .preview-box.dark-mode span {
+      color: #e8e8e8 !important;
+    }
+    .preview-box.dark-mode td[data-field="name"] {
+      color: #e8e8e8 !important;
+    }
+    .preview-box.dark-mode td[data-field="title"] {
+      color: #cccccc !important;
+    }
+    /* Icon cells invert in dark mode (simulating Outlook behavior) */
+    .preview-box.dark-mode td[bgcolor="#14191c"] {
+      background-color: #e0e0e0 !important;
+      color: #1a1a1a !important;
+    }
+    .preview-box.dark-mode td[bgcolor="#14191c"] span,
+    .preview-box.dark-mode td[bgcolor="#14191c"] a {
+      color: #1a1a1a !important;
+    }
+    /* White box behind logo stays white in dark mode — matches Outlook behavior */
+    .preview-box.dark-mode td[data-field="logo"] {
+      background-color: #ffffff !important;
+      background: #ffffff !important;
+    }
+
+    /* ── Image Preview Thumbnail ── */
+    .img-thumb-row {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .img-thumb {
+      max-height: 40px;
+      max-width: 120px;
+      border-radius: 0;
+      border: 1px solid #e0e0e0;
+      background: #f5f5f5;
+    }
+    .img-thumb-label {
+      font-size: 10px;
+      color: #aaa;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .app { flex-direction: column; height: auto; }
+      .col-left { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid #e0e0e0; max-height: 50vh; }
+      .col-right { min-height: 50vh; }
+      html, body { overflow: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════ HEADER ════════════ -->
+  <div class="header">
+    <div>
+      <h1>Email Signature Generator</h1>
+      <div class="subtitle">Vista Site Selection</div>
+    </div>
+    <button class="help-btn" onclick="toggleDrawer()">
+      <span style="font-size:16px;">&#9432;</span> How to Install
+    </button>
+  </div>
+
+  <!-- ════════════ APP LAYOUT ════════════ -->
+  <div class="app">
+
+    <!-- ──── LEFT COLUMN: Form ──── -->
+    <div class="col-left">
+
+      <!-- Contact Information (first — most users start here) -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('contactBody', this)">
+          <h2>Contact Information</h2>
+          <span class="chevron open">&#9654;</span>
+        </div>
+        <div id="contactBody" class="section-body">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="fullName" value="WILLIAM FLOYD" oninput="updatePreview()" style="text-transform:uppercase; font-weight:700;">
+          </div>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="title" value="SVP, Communications &amp; Strategy" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="phone" value="972.415.9197" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="text" id="email" value="whfloyd@vistasiteselection.com" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label>LinkedIn Profile URL</label>
+            <input type="text" id="linkedin" value="https://www.linkedin.com/in/whfiv/" oninput="deriveLinkedInDisplay(); updatePreview();">
+          </div>
+          <div class="form-group">
+            <label>LinkedIn Display Text</label>
+            <input type="text" id="linkedinDisplay" value="linkedin.com/in/whfiv/" oninput="updatePreview()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Branding Settings (collapsible — admin only) -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('brandingBody', this)">
+          <h2>Branding &amp; Image Settings</h2>
+          <span class="chevron">&#9654;</span>
+        </div>
+        <div id="brandingBody" class="section-body collapsed">
+          <div class="note-danger">
+            <b>ADMIN ONLY</b> — These settings control images, brand colors, and signature dimensions for the entire team. Change with care.
+          </div>
+          <div class="form-group">
+            <label>V Logo Image</label>
+            <div class="file-input-row">
+              <input type="text" id="logoUrl" value="https://i.imgur.com/03IUPTd.gif" oninput="updatePreview(); updateThumbs();">
+              <button class="btn-browse" onclick="browseFile('logoUrl')">Browse</button>
+            </div>
+            <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'logoUrl')">
+            <div class="img-thumb-row" id="logoThumbRow">
+              <img class="img-thumb" id="logoThumb" src="https://i.imgur.com/03IUPTd.gif" alt="Logo preview">
+              <span class="img-thumb-label">Logo preview</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Banner Image</label>
+            <div class="file-input-row">
+              <input type="text" id="bannerUrl" value="https://i.imgur.com/KA2C4Nf.gif" oninput="updatePreview(); updateThumbs();">
+              <button class="btn-browse" onclick="browseFile('bannerUrl')">Browse</button>
+            </div>
+            <input type="file" id="bannerFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'bannerUrl')">
+            <div class="img-thumb-row" id="bannerThumbRow">
+              <img class="img-thumb" id="bannerThumb" src="https://i.imgur.com/KA2C4Nf.gif" alt="Banner preview">
+              <span class="img-thumb-label">Banner preview</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Banner Link URL</label>
+            <input type="text" id="bannerLink" value="https://thesystem.vistasiteselectiondata.com/" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label>Website</label>
+            <input type="text" id="websiteUrl" value="www.vistasiteselection.com" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label>Name Color</label>
+            <input type="color" id="nameColor" value="#b22c2e" oninput="updatePreview()" style="height:42px;">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Signature Width (px)</label>
+              <input type="number" id="sigWidth" value="380" min="250" max="700" step="10" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+              <label>Signature Height (px)</label>
+              <input type="number" id="sigHeight" value="0" min="0" max="400" step="5" oninput="updatePreview()" placeholder="Auto">
+            </div>
+          </div>
+          <p style="font-size:9px;color:#999;margin-top:-10px;margin-bottom:14px;letter-spacing:0.5px;">Height 0 = auto (fits content). Set a value to force a minimum height.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ──── RIGHT COLUMN: Preview + Cards ──── -->
+    <div class="col-right">
+
+      <!-- Live Preview -->
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <h3 style="margin-bottom:0; border-bottom:none; padding-bottom:0;">Live Preview</h3>
+          <div class="mode-toggle">
+            <button class="mode-btn active" onclick="setPreviewMode('light', this)">Light</button>
+            <button class="mode-btn" onclick="setPreviewMode('dark', this)">Dark</button>
+          </div>
+        </div>
+        <div class="preview-box" id="previewBox"></div>
+        <div class="btn-row">
+          <button class="btn btn-red" onclick="copyRichText()" style="flex:1;">Copy Signature to Clipboard</button>
+          <button class="btn btn-dark" onclick="copyHTML()">Copy HTML</button>
+          <button class="btn btn-outline" onclick="downloadHTML()">Download</button>
+        </div>
+      </div>
+
+      <!-- Quick Select -->
+      <div class="card">
+        <h3>Quick Select — Click Your Name</h3>
+        <div class="emp-grid" id="employeeGrid"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════ HELP DRAWER ════════════ -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="toggleDrawer()"></div>
+  <div class="drawer" id="helpDrawer">
+    <div class="drawer-header">
+      <h2>How to Install Your Signature</h2>
+      <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
+    </div>
+    <div class="drawer-body">
+      <h3>Step 1: Copy Your Signature</h3>
+      <ol>
+        <li>Click your name in the <b>Quick Select</b> grid (or fill in your info manually)</li>
+        <li>Click the <b>"Copy Signature to Clipboard"</b> button (the big red button)</li>
+      </ol>
+
+      <h3>Step 2: Paste into Outlook</h3>
+      <ol>
+        <li>
+          <b>Outlook Desktop (Classic):</b><br>
+          Go to <code>File &rarr; Options &rarr; Mail &rarr; Signatures</code>. Click <b>New</b>, name your signature,
+          then click in the edit box and press <code>Ctrl+V</code> to paste.
+        </li>
+        <li>
+          <b>Outlook (New / Windows 11):</b><br>
+          Click the gear icon &rarr; <code>Accounts &rarr; Signatures</code>. Click <b>+ New signature</b>, name it,
+          then paste into the editor.
+        </li>
+        <li>
+          <b>Outlook Web (outlook.com):</b><br>
+          Go to <code>Settings &rarr; Mail &rarr; Compose and reply</code>. Under <b>Email signature</b>, paste.
+        </li>
+        <li>
+          <b>Outlook Mobile (iOS / Android):</b><br>
+          Go to <code>Settings &rarr; [your account] &rarr; Signature</code>.
+          Mobile has limited HTML support &mdash; the signature will appear simplified.
+        </li>
+      </ol>
+
+      <div class="tip">
+        <b>Pro Tips:</b><br>
+        &bull; <b>Fonts:</b> Montserrat renders in webmail &amp; mobile. Classic Outlook desktop falls back to Arial &mdash; this is normal.<br>
+        &bull; <b>Animated GIFs:</b> The V logo and banner will animate in webmail &amp; mobile. Classic Outlook desktop shows only the first frame.<br>
+        &bull; <b>"Copy Signature to Clipboard"</b> is the easiest method. If it doesn't paste cleanly, try <b>"Copy HTML"</b> and paste into your signature editor's source/code view.<br>
+        &bull; Ensure images are hosted at <b>permanent public URLs</b> &mdash; if the host goes down, images break.
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ════════════ JAVASCRIPT ════════════ -->
+  <script>
+    // ── Helpers ──
+    function $(id) { return document.getElementById(id); }
+
+    function showToast(msg) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    function esc(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ── Section Accordion ──
+    function toggleSection(bodyId, headerEl) {
+      const body = $(bodyId);
+      const chevron = headerEl.querySelector('.chevron');
+      body.classList.toggle('collapsed');
+      chevron.classList.toggle('open');
+    }
+
+    // ── Help Drawer ──
+    function toggleDrawer() {
+      $('helpDrawer').classList.toggle('open');
+      $('drawerBackdrop').classList.toggle('open');
+    }
+
+    // ── File Picker ──
+    function browseFile(urlFieldId) {
+      const fileInputId = urlFieldId === 'logoUrl' ? 'logoFile' : 'bannerFile';
+      $(fileInputId).click();
+    }
+    function handleFileSelect(fileInput, urlFieldId) {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        $(urlFieldId).value = e.target.result;
+        updatePreview();
+        showToast(file.name + ' loaded!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ── Form Helpers ──
+    function deriveLinkedInDisplay() {
+      const url = $('linkedin').value.trim();
+      if (url) {
+        const display = url.replace(/^https?:\/\/(www\.)?/, '');
+        $('linkedinDisplay').value = display.endsWith('/') ? display : display + '/';
+      }
+    }
+
+    function getValues() {
+      return {
+        name:            $('fullName').value.toUpperCase(),
+        title:           $('title').value,
+        phone:           $('phone').value,
+        email:           $('email').value,
+        linkedin:        $('linkedin').value.trim(),
+        linkedinDisplay: $('linkedinDisplay').value,
+        logoUrl:         $('logoUrl').value.trim(),
+        bannerUrl:       $('bannerUrl').value.trim(),
+        bannerLink:      $('bannerLink').value.trim(),
+        websiteUrl:      $('websiteUrl').value.trim(),
+        nameColor:       $('nameColor').value,
+        sigWidth:        parseInt($('sigWidth').value) || 500,
+        sigHeight:       parseInt($('sigHeight').value) || 0
+      };
+    }
+
+    // ── Icon characters (with &#xFE0E; variation selector to prevent emoji rendering) ──
+    const iconChars = {
+      phone: '&#9742;&#xFE0E;',
+      email: '&#9993;&#xFE0E;',
+      web: 'W',
+      linkedin: 'in'
+    };
+
+    // ── Build one contact row ──
+    function iconRow(iconKey, text, href, displayText, opts = {}) {
+      const isLast    = opts.last || false;
+      const fieldName = opts.field || '';
+      const pb        = isLast ? '0' : '5';
+      const iconChar  = iconChars[iconKey] || iconKey;
+      const isBold    = (iconKey === 'web' || iconKey === 'linkedin');
+      const fontSize  = iconKey === 'linkedin' ? '8' : '10';
+      const isTel     = href && href.startsWith('tel:');
+      const target    = isTel ? '' : ' target="_blank"';
+      // For tel: links, don't escape the href (keep tel:+1... clean)
+      const safeHref  = isTel ? href : esc(href || '#');
+
+      let content;
+      if (href) {
+        content = `<a href="${safeHref}"${target} style="color:#14191c;text-decoration:none;font-size:11px;font-family:'Montserrat',Arial,Helvetica,sans-serif;">${esc(displayText || text)}</a>`;
+      } else {
+        content = `<span style="font-size:11px;color:#14191c;font-family:'Montserrat',Arial,Helvetica,sans-serif;">${esc(text)}</span>`;
+      }
+
+      return `
+        <tr ${fieldName ? `data-field="${fieldName}"` : ''}>
+          <td width="18" style="padding-bottom:${pb}px;" valign="middle">
+            <a href="${safeHref}"${target} style="text-decoration:none !important;border:0;display:block;color:#ffffff !important;">
+              <table cellpadding="0" cellspacing="0" border="0"><tr>
+                <td width="18" height="18" bgcolor="#14191c" style="background-color:#14191c;color:#ffffff !important;font-size:${fontSize}px;${isBold ? 'font-weight:bold;' : ''}font-family:Arial,sans-serif;text-align:center;line-height:18px;border-radius:9px;-webkit-border-radius:9px;" align="center">
+                  <span style="color:#ffffff !important;text-decoration:none !important;">${iconChar}</span>
+                </td>
+              </tr></table>
+            </a>
+          </td>
+          <td style="padding:0 0 ${pb}px 8px;vertical-align:middle;" valign="middle">
+            ${content}
+          </td>
+        </tr>`;
+    }
+
+    // ── Generate full signature HTML ──
+    function buildSignatureHTML(v) {
+      const logoImg = v.logoUrl
+        ? `<img src="${esc(v.logoUrl)}" width="80" style="display:block;border:0;width:80px;" alt="Vista Site Selection">`
+        : `<span style="color:#ffffff;font-size:48px;font-weight:bold;font-family:Arial,sans-serif;">V</span>`;
+
+      const bannerHtml = v.bannerUrl
+        ? `
+  <tr>
+    <td colspan="5" data-field="banner" style="padding-top:12px;">
+      <a href="${esc(v.bannerLink)}" target="_blank" style="text-decoration:none;">
+        <img src="${esc(v.bannerUrl)}" width="${v.sigWidth}" style="display:block;border:0;max-width:100%;" alt="The System - Click for Access">
+      </a>
+    </td>
+  </tr>`
+        : '';
+
+      const linkedinRow = v.linkedin
+        ? iconRow('linkedin', v.linkedinDisplay, v.linkedin, v.linkedinDisplay, { last: true, field: 'linkedin' })
+        : '';
+
+      const websiteLast = !v.linkedin;
+
+      return `<table cellpadding="0" cellspacing="0" border="0" data-field="wrapper" style="max-width:${v.sigWidth}px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;" width="${v.sigWidth}">
+  <tr>
+    <td valign="top" data-field="logo" style="width:80px;padding:0;">
+      <a href="https://${esc(v.websiteUrl)}" target="_blank" style="text-decoration:none;border:0;">
+        ${logoImg}
+      </a>
+    </td>
+    <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;">&nbsp;</td>
+    <td width="2" bgcolor="${v.nameColor}" style="background-color:${v.nameColor};font-size:1px;line-height:1px;width:2px;min-width:2px;">&nbsp;</td>
+    <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;">&nbsp;</td>
+    <td valign="top" style="padding:0;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%" style="height:100%;">
+        <tr>
+          <td valign="top" data-field="name" style="padding:4px 0 0 0;font-size:18px;font-weight:800;color:${v.nameColor};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.2;">
+            ${esc(v.name)}
+          </td>
+        </tr>
+        <tr>
+          <td valign="top" data-field="title" style="font-size:11px;font-weight:700;color:#14191c;font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.3;height:30px;" height="30">
+            ${esc(v.title)}
+          </td>
+        </tr>
+        <tr>
+          <td valign="bottom" style="padding:0 0 4px 0;">
+            <table cellpadding="0" cellspacing="0" border="0">
+              ${iconRow('phone', v.phone, 'tel:+1' + v.phone.replace(/\./g, ''), v.phone, { field: 'phone' })}
+              ${iconRow('email', v.email, 'mailto:' + v.email, v.email, { field: 'email' })}
+              ${iconRow('web', v.websiteUrl, 'https://' + v.websiteUrl, v.websiteUrl, { last: websiteLast, field: 'website' })}
+              ${linkedinRow}
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>${bannerHtml}
+</table>`;
+    }
+
+    // ── Update Preview ──
+    function updatePreview() {
+      const v = getValues();
+      const html = buildSignatureHTML(v);
+      $('previewBox').innerHTML = html;
+      applyHighlight();
+    }
+
+    // ── Copy Functions ──
+    function copyHTML() {
+      const v = getValues();
+      const html = buildSignatureHTML(v);
+      navigator.clipboard.writeText(html).then(() => showToast('HTML code copied!'));
+    }
+
+    async function copyRichText() {
+      const v = getValues();
+      const html = buildSignatureHTML(v);
+      try {
+        const htmlBlob = new Blob([html], { type: 'text/html' });
+        const textBlob = new Blob([html], { type: 'text/plain' });
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'text/html': htmlBlob, 'text/plain': textBlob })
+        ]);
+        showToast('Signature copied! Paste into Outlook.');
+      } catch (err) {
+        navigator.clipboard.writeText(html).then(() =>
+          showToast('Copied as HTML code.')
+        );
+      }
+    }
+
+    function downloadHTML() {
+      const v = getValues();
+      const html = buildSignatureHTML(v);
+      const doc = `<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title>Signature — ${esc(v.name)}</title>\n</head>\n<body style="margin:0;padding:20px;">\n${html}\n</body>\n</html>`;
+      const blob = new Blob([doc], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `signature-${v.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('File downloaded!');
+    }
+
+    // ── Employee Directory ──
+    const employees = [
+      { name: "Matt Samler", title: "Managing Partner & Executive Managing Director", email: "MTSamler@VistaSiteSelection.com", phone: "214.583.6899", linkedin: "https://www.linkedin.com/in/matthewsamler" },
+      { name: "Chris Magill", title: "Partner & Senior Managing Director", email: "cjmagill@vistasiteselection.com", phone: "614.464.6295", linkedin: "https://www.linkedin.com/in/chrismagill" },
+      { name: "Evan Stair", title: "Partner & Senior Managing Director", email: "elstair@vistasiteselection.com", phone: "972.603.5947", linkedin: "https://www.linkedin.com/in/elsdata/" },
+      { name: "Jeff Troan", title: "Partner & Senior Managing Director", email: "gjtroan@vistasiteselection.com", phone: "202.747.5644", linkedin: "https://www.linkedin.com/in/geoffrey-troan-637b60a/" },
+      { name: "James Maples, PhD", title: "Lead Economist", email: "jnmaples@vistasiteselection.com", phone: "865.254.6395", linkedin: "https://www.linkedin.com/in/james-maples/" },
+      { name: "Julie Miller", title: "Managing Director & Head of Incentives Compliance", email: "jmmiller@vistasiteselection.com", phone: "214.583.6898", linkedin: "https://www.linkedin.com/in/julie-miller-ccip/" },
+      { name: "Andrea Dishler", title: "Senior Vice President, Project Management", email: "adishler@vistasiteselection.com", phone: "202.448.1492", linkedin: "https://www.linkedin.com/in/andrea-dishler/" },
+      { name: "Janie Hanna", title: "Vice President of Program Management", email: "jhanna@vistasiteselection.com", phone: "440.387.7506", linkedin: "https://www.linkedin.com/in/janie-hanna/" },
+      { name: "Taylor Blanks", title: "Program Support Manager", email: "tblanks@vistasiteselection.com", phone: "202.747.5640", linkedin: "https://www.linkedin.com/in/yourfavoriteea-taylorblanks/" },
+      { name: "William Floyd", title: "SVP, Communications & Strategy", email: "whfloyd@vistasiteselection.com", phone: "972.415.9197", linkedin: "https://www.linkedin.com/in/whfiv/" },
+      { name: "Mac Smith", title: "Data Scientist", email: "tmsmith@vistasiteselection.com", phone: "614.905.6397", linkedin: "https://www.linkedin.com/in/theodoremsmith/" }
+    ];
+
+    function buildEmployeeGrid() {
+      const grid = $('employeeGrid');
+      employees.forEach((emp, i) => {
+        const initials = emp.name.split(' ').filter(w => w[0] && w[0] === w[0].toUpperCase()).map(w => w[0]).join('').substring(0, 2);
+        const card = document.createElement('div');
+        card.className = 'emp-card';
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div class="emp-avatar">${initials}</div>
+          <div>
+            <div class="emp-name">${emp.name}</div>
+            <div class="emp-title">${emp.title}</div>
+          </div>`;
+        card.addEventListener('click', () => selectEmployee(i));
+        grid.appendChild(card);
+      });
+    }
+
+    function selectEmployee(index) {
+      const emp = employees[index];
+      $('fullName').value = emp.name.toUpperCase();
+      $('title').value = emp.title;
+      $('phone').value = emp.phone;
+      $('email').value = emp.email;
+      $('linkedin').value = emp.linkedin;
+      const liDisplay = emp.linkedin.replace(/^https?:\/\/(www\.)?/, '');
+      $('linkedinDisplay').value = liDisplay.endsWith('/') ? liDisplay : liDisplay + '/';
+
+      // Highlight active card
+      document.querySelectorAll('.emp-card').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.emp-card')[index].classList.add('active');
+
+      updatePreview();
+
+      // Scroll preview into view in right column
+      $('previewBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      showToast(emp.name + "'s signature ready — click the red button to copy!");
+    }
+
+    // ── Preview Mode (Light / Dark) ──
+    function setPreviewMode(mode, btn) {
+      const box = $('previewBox');
+      box.classList.toggle('dark-mode', mode === 'dark');
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    // ── Image Thumbnails ──
+    function updateThumbs() {
+      const logoSrc = $('logoUrl').value.trim();
+      const bannerSrc = $('bannerUrl').value.trim();
+      const logoThumb = $('logoThumb');
+      const bannerThumb = $('bannerThumb');
+      if (logoSrc) { logoThumb.src = logoSrc; logoThumb.style.display = ''; } else { logoThumb.style.display = 'none'; }
+      if (bannerSrc) { bannerThumb.src = bannerSrc; bannerThumb.style.display = ''; } else { bannerThumb.style.display = 'none'; }
+    }
+
+    // ── Preview Highlight on Input Focus (Cyan overlay) ──
+    const fieldMap = {
+      'fullName': '[data-field="name"]',
+      'title': '[data-field="title"]',
+      'phone': '[data-field="phone"]',
+      'email': '[data-field="email"]',
+      'linkedin': '[data-field="linkedin"]',
+      'linkedinDisplay': '[data-field="linkedin"]',
+      'logoUrl': '[data-field="logo"]',
+      'bannerUrl': '[data-field="banner"]',
+      'bannerLink': '[data-field="banner"]',
+      'sigWidth': '[data-field="wrapper"]',
+      'sigHeight': '[data-field="wrapper"]',
+      'websiteUrl': '[data-field="website"]',
+      'nameColor': '[data-field="name"]'
+    };
+
+    let activeField = null;
+
+    function applyHighlight() {
+      document.querySelectorAll('.preview-highlight').forEach(el => el.classList.remove('preview-highlight'));
+      if (activeField) {
+        const selector = fieldMap[activeField];
+        if (selector) {
+          const target = $('previewBox').querySelector(selector);
+          if (target) target.classList.add('preview-highlight');
+        }
+      }
+    }
+
+    Object.keys(fieldMap).forEach(inputId => {
+      const input = $(inputId);
+      if (!input) return;
+      input.addEventListener('focus', () => {
+        activeField = inputId;
+        applyHighlight();
+      });
+      input.addEventListener('blur', () => {
+        activeField = null;
+        applyHighlight();
+      });
+    });
+
+    // ── Initialize ──
+    buildEmployeeGrid();
+    updatePreview();
+  </script>
+</body>
+</html>
