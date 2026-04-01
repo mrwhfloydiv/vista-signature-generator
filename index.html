@@ -938,24 +938,53 @@
       const html = buildSignatureHTML(v);
       const btn = document.querySelector('.btn-red');
       const originalText = btn.textContent;
-      try {
-        const htmlBlob = new Blob([html], { type: 'text/html' });
-        const textBlob = new Blob([html], { type: 'text/plain' });
-        await navigator.clipboard.write([
-          new ClipboardItem({ 'text/html': htmlBlob, 'text/plain': textBlob })
-        ]);
-        // Flash green
+
+      function flashSuccess(msg) {
         btn.classList.add('copied');
         btn.textContent = 'COPIED!';
-        showToast('Signature copied! Paste into Outlook.');
+        showToast(msg || 'Signature copied! Paste into Outlook.');
         setTimeout(() => { btn.classList.remove('copied'); btn.textContent = originalText; }, 2000);
-      } catch (err) {
-        navigator.clipboard.writeText(html).then(() => {
-          btn.classList.add('copied');
-          btn.textContent = 'COPIED!';
-          showToast('Copied as HTML code.');
-          setTimeout(() => { btn.classList.remove('copied'); btn.textContent = originalText; }, 2000);
-        });
+      }
+
+      // Method 1: ClipboardItem API (works on desktop Chrome/Edge)
+      if (typeof ClipboardItem !== 'undefined') {
+        try {
+          const htmlBlob = new Blob([html], { type: 'text/html' });
+          const textBlob = new Blob([html], { type: 'text/plain' });
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'text/html': htmlBlob, 'text/plain': textBlob })
+          ]);
+          flashSuccess();
+          return;
+        } catch (e) { /* fall through to method 2 */ }
+      }
+
+      // Method 2: Select rendered preview + execCommand (works on mobile)
+      try {
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        temp.style.position = 'fixed';
+        temp.style.left = '-9999px';
+        temp.style.top = '0';
+        document.body.appendChild(temp);
+        const range = document.createRange();
+        range.selectNodeContents(temp);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('copy');
+        sel.removeAllRanges();
+        document.body.removeChild(temp);
+        flashSuccess('Signature copied! Paste into Outlook.');
+        return;
+      } catch (e) { /* fall through to method 3 */ }
+
+      // Method 3: Plain text fallback
+      try {
+        await navigator.clipboard.writeText(html);
+        flashSuccess('Copied as HTML code.');
+      } catch (e) {
+        showToast('Copy failed — try selecting the preview manually.');
       }
     }
 
