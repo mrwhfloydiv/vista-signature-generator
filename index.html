@@ -155,6 +155,26 @@
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
+    /* ── Meta Hints ── */
+    .meta-hint {
+      font-size: 9px;
+      font-family: 'Consolas', monospace;
+      color: #b22c2e;
+      margin-top: 4px;
+      opacity: 0.6;
+      letter-spacing: 0.3px;
+      line-height: 1.6;
+      transition: opacity 0.2s;
+    }
+    .form-group:hover .meta-hint,
+    .form-group:focus-within .meta-hint {
+      opacity: 1;
+    }
+    .meta-hint .meta-label {
+      color: #999;
+      font-weight: 600;
+    }
+
     /* ── File Picker ── */
     .file-input-row { display: flex; gap: 6px; align-items: stretch; }
     .file-input-row input[type="text"] { flex: 1; min-width: 0; font-size: 11px; }
@@ -446,15 +466,24 @@
     .preview-highlight {
       position: relative;
     }
+    .preview-highlight {
+      overflow: hidden;
+    }
     .preview-highlight::after {
       content: '';
       position: absolute;
-      inset: -2px;
+      inset: 0;
       background: rgba(0, 210, 255, 0.15);
       border: 2px solid rgba(0, 210, 255, 0.6);
       border-radius: 0;
       pointer-events: none;
       mix-blend-mode: multiply;
+    }
+
+    /* ── Wireframe Skeleton (shows all element boundaries) ── */
+    .preview-box.show-wireframe td,
+    .preview-box.show-wireframe table {
+      outline: 1px solid rgba(200, 200, 200, 0.4);
     }
 
     /* ── Preview Mode Toggle ── */
@@ -496,12 +525,12 @@
       color: #cccccc !important;
     }
     /* Icon cells invert in dark mode (simulating Outlook behavior) */
-    .preview-box.dark-mode td[bgcolor="#14191c"] {
+    .preview-box.dark-mode td[width="18"][height="18"] {
       background-color: #e0e0e0 !important;
       color: #1a1a1a !important;
     }
-    .preview-box.dark-mode td[bgcolor="#14191c"] span,
-    .preview-box.dark-mode td[bgcolor="#14191c"] a {
+    .preview-box.dark-mode td[width="18"][height="18"] span,
+    .preview-box.dark-mode td[width="18"][height="18"] a {
       color: #1a1a1a !important;
     }
     /* White box behind logo stays white in dark mode — matches Outlook behavior */
@@ -564,29 +593,40 @@
           <span class="chevron open">&#9654;</span>
         </div>
         <div id="contactBody" class="section-body">
-          <div class="form-group">
+          <div class="form-group" data-highlights="name">
             <label>Full Name</label>
-            <input type="text" id="fullName" value="WILLIAM FLOYD" oninput="updatePreview()" style="text-transform:uppercase; font-weight:700;">
+            <input type="text" id="fullName" value="WILLIAM FLOYD" oninput="updatePreview(); updateMetaHints();" style="text-transform:uppercase; font-weight:700;">
+            <div class="meta-hint" id="metaName"><span class="meta-label">DISPLAY:</span> WILLIAM FLOYD &nbsp; <span class="meta-label">ACTION:</span> none</div>
           </div>
-          <div class="form-group">
+          <div class="form-group" data-highlights="title">
             <label>Title</label>
-            <input type="text" id="title" value="Senior Vice President, Strategy &amp; Communications" oninput="updatePreview()">
+            <input type="text" id="title" value="Senior Vice President, Strategy &amp; Communications" oninput="updatePreview(); updateMetaHints();">
+            <div class="meta-hint" id="metaTitle"><span class="meta-label">DISPLAY:</span> subtitle &nbsp; <span class="meta-label">ACTION:</span> none</div>
           </div>
-          <div class="form-group">
+          <div class="form-group" data-highlights="phone">
             <label>Phone Number</label>
-            <input type="text" id="phone" value="972.415.9197" oninput="updatePreview()">
+            <input type="text" id="phone" value="972.415.9197" oninput="updatePreview(); updateMetaHints();">
+            <div class="meta-hint" id="metaPhone"><span class="meta-label">DISPLAY:</span> 972.415.9197 &nbsp; <span class="meta-label">ACTION:</span> tel:+19724159197</div>
           </div>
-          <div class="form-group">
+          <div class="form-group" data-highlights="email">
             <label>Email Address</label>
-            <input type="text" id="email" value="whfloyd@vistasiteselection.com" oninput="updatePreview()">
+            <input type="text" id="email" value="whfloyd@vistasiteselection.com" oninput="updatePreview(); updateMetaHints();">
+            <div class="meta-hint" id="metaEmail"><span class="meta-label">DISPLAY:</span> email text &nbsp; <span class="meta-label">ACTION:</span> mailto:whfloyd@vistasiteselection.com</div>
           </div>
-          <div class="form-group">
+          <div class="form-group" data-highlights="website">
+            <label>Website</label>
+            <input type="text" id="websiteUrl" value="www.vistasiteselection.com" oninput="updatePreview(); updateMetaHints();">
+            <div class="meta-hint" id="metaWebsite"><span class="meta-label">DISPLAY:</span> website text &nbsp; <span class="meta-label">ACTION:</span> https://www.vistasiteselection.com</div>
+          </div>
+          <div class="form-group" data-highlights="linkedin">
             <label>LinkedIn Profile URL</label>
-            <input type="text" id="linkedin" value="https://www.linkedin.com/in/whfiv/" oninput="deriveLinkedInDisplay(); updatePreview();">
+            <input type="text" id="linkedin" value="https://www.linkedin.com/in/whfiv/" oninput="deriveLinkedInDisplay(); updatePreview(); updateMetaHints();">
+            <div class="meta-hint" id="metaLinkedin"><span class="meta-label">DISPLAY:</span> display text &nbsp; <span class="meta-label">ACTION:</span> opens profile</div>
           </div>
-          <div class="form-group">
+          <div class="form-group" data-highlights="linkedin">
             <label>LinkedIn Display Text</label>
-            <input type="text" id="linkedinDisplay" value="linkedin.com/in/whfiv/" oninput="updatePreview()">
+            <input type="text" id="linkedinDisplay" value="linkedin.com/in/whfiv/" oninput="updatePreview(); updateMetaHints();">
+            <div class="meta-hint" id="metaLinkedinDisplay"><span class="meta-label">DISPLAY:</span> shown text in signature &nbsp; <span class="meta-label">ACTION:</span> none (uses URL above)</div>
           </div>
         </div>
       </div>
@@ -601,10 +641,10 @@
           <div class="note-danger">
             <b>ADMIN ONLY</b> — These settings control images, brand colors, and signature dimensions for the entire team. Change with care.
           </div>
-          <div class="form-group">
-            <label>V Logo Image</label>
+          <div class="form-group" data-highlights="logo">
+            <label>Left Logo Image</label>
             <div class="file-input-row">
-              <input type="text" id="logoUrl" value="https://i.imgur.com/03IUPTd.gif" oninput="updatePreview(); updateThumbs();">
+              <input type="text" id="logoUrl" value="https://i.imgur.com/03IUPTd.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
               <button class="btn-browse" onclick="browseFile('logoUrl')">Browse</button>
             </div>
             <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'logoUrl')">
@@ -612,11 +652,12 @@
               <img class="img-thumb" id="logoThumb" src="https://i.imgur.com/03IUPTd.gif" alt="Logo preview">
               <span class="img-thumb-label">Logo preview</span>
             </div>
+            <div class="meta-hint" id="metaLogo"><span class="meta-label">DISPLAY:</span> left column image (80px wide)<br><span class="meta-label">ACTION:</span> links to website<br><span class="meta-label">RECOMMENDED:</span> 584 x 1138px (1:2 ratio, tall rectangle)</div>
           </div>
-          <div class="form-group">
+          <div class="form-group" data-highlights="banner">
             <label>Banner Image</label>
             <div class="file-input-row">
-              <input type="text" id="bannerUrl" value="https://i.imgur.com/KA2C4Nf.gif" oninput="updatePreview(); updateThumbs();">
+              <input type="text" id="bannerUrl" value="https://i.imgur.com/KA2C4Nf.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
               <button class="btn-browse" onclick="browseFile('bannerUrl')">Browse</button>
             </div>
             <input type="file" id="bannerFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'bannerUrl')">
@@ -624,30 +665,42 @@
               <img class="img-thumb" id="bannerThumb" src="https://i.imgur.com/KA2C4Nf.gif" alt="Banner preview">
               <span class="img-thumb-label">Banner preview</span>
             </div>
+            <label style="margin-top:12px;">Banner Link URL</label>
+            <input type="text" id="bannerLink" value="https://thesystem.vistasiteselectiondata.com/" oninput="updatePreview(); updateMetaHints();">
+            <div class="meta-hint" id="metaBanner"><span class="meta-label">DISPLAY:</span> full-width footer banner<br><span class="meta-label">ACTION:</span> banner image opens link on click<br><span class="meta-label">RECOMMENDED:</span> 1138 x 200px (wide rectangle)</div>
           </div>
-          <div class="form-group">
-            <label>Banner Link URL</label>
-            <input type="text" id="bannerLink" value="https://thesystem.vistasiteselectiondata.com/" oninput="updatePreview()">
-          </div>
-          <div class="form-group">
-            <label>Website</label>
-            <input type="text" id="websiteUrl" value="www.vistasiteselection.com" oninput="updatePreview()">
-          </div>
-          <div class="form-group">
+          <div class="form-group" data-highlights="name">
             <label>Name Color</label>
-            <input type="color" id="nameColor" value="#b22c2e" oninput="updatePreview()" style="height:42px;">
-          </div>
-          <div class="form-row-2">
-            <div class="form-group">
-              <label>Signature Width (px)</label>
-              <input type="number" id="sigWidth" value="380" min="250" max="700" step="10" oninput="updatePreview()">
+            <div style="display:flex;gap:8px;align-items:stretch;">
+              <input type="color" id="nameColor" value="#b22c2e" oninput="syncColorHex('nameColor','nameColorHex'); updatePreview(); updateMetaHints();" style="height:38px;width:60px;flex-shrink:0;">
+              <input type="text" id="nameColorHex" value="#b22c2e" oninput="syncHexColor('nameColorHex','nameColor'); updatePreview(); updateMetaHints();" style="font-family:Consolas,monospace;font-size:12px;">
             </div>
-            <div class="form-group">
-              <label>Signature Height (px)</label>
-              <input type="number" id="sigHeight" value="0" min="0" max="400" step="5" oninput="updatePreview()" placeholder="Auto">
-            </div>
+            <div class="meta-hint" id="metaNameColor"><span class="meta-label">APPLIES TO:</span> name text only</div>
           </div>
-          <p style="font-size:9px;color:#999;margin-top:-10px;margin-bottom:14px;letter-spacing:0.5px;">Height 0 = auto (fits content). Set a value to force a minimum height.</p>
+          <div class="form-group" data-highlights="bar">
+            <label>Bar Color</label>
+            <div style="display:flex;gap:8px;align-items:stretch;">
+              <input type="color" id="barColor" value="#b22c2e" oninput="syncColorHex('barColor','barColorHex'); updatePreview(); updateMetaHints();" style="height:38px;width:60px;flex-shrink:0;">
+              <input type="text" id="barColorHex" value="#b22c2e" oninput="syncHexColor('barColorHex','barColor'); updatePreview(); updateMetaHints();" style="font-family:Consolas,monospace;font-size:12px;">
+            </div>
+            <div class="meta-hint" id="metaBarColor"><span class="meta-label">APPLIES TO:</span> vertical divider bar</div>
+          </div>
+          <div class="form-group" data-highlights="alltext">
+            <label>Text Color</label>
+            <div style="display:flex;gap:8px;align-items:stretch;">
+              <input type="color" id="textColor" value="#14191c" oninput="syncColorHex('textColor','textColorHex'); updatePreview(); updateMetaHints();" style="height:38px;width:60px;flex-shrink:0;">
+              <input type="text" id="textColorHex" value="#14191c" oninput="syncHexColor('textColorHex','textColor'); updatePreview(); updateMetaHints();" style="font-family:Consolas,monospace;font-size:12px;">
+            </div>
+            <div class="meta-hint" id="metaTextColor"><span class="meta-label">APPLIES TO:</span> title + contact info text</div>
+          </div>
+          <div class="form-group" data-highlights="icons">
+            <label>Icon Color</label>
+            <div style="display:flex;gap:8px;align-items:stretch;">
+              <input type="color" id="iconColor" value="#14191c" oninput="syncColorHex('iconColor','iconColorHex'); updatePreview(); updateMetaHints();" style="height:38px;width:60px;flex-shrink:0;">
+              <input type="text" id="iconColorHex" value="#14191c" oninput="syncHexColor('iconColorHex','iconColor'); updatePreview(); updateMetaHints();" style="font-family:Consolas,monospace;font-size:12px;">
+            </div>
+            <div class="meta-hint" id="metaIconColor"><span class="meta-label">APPLIES TO:</span> icon circle backgrounds</div>
+          </div>
         </div>
       </div>
 
@@ -665,9 +718,14 @@
       <div class="card">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
           <h3 style="margin-bottom:0; border-bottom:none; padding-bottom:0;">Live Preview</h3>
-          <div class="mode-toggle">
-            <button class="mode-btn active" onclick="setPreviewMode('light', this)">Light</button>
-            <button class="mode-btn" onclick="setPreviewMode('dark', this)">Dark</button>
+          <div style="display:flex;gap:8px;">
+            <div class="mode-toggle">
+              <button class="mode-btn active" onclick="setPreviewMode('light', this)">Light</button>
+              <button class="mode-btn" onclick="setPreviewMode('dark', this)">Dark</button>
+            </div>
+            <div class="mode-toggle">
+              <button class="mode-btn" onclick="toggleWireframe(this)">Grid</button>
+            </div>
           </div>
         </div>
         <div class="preview-box" id="previewBox"></div>
@@ -769,6 +827,18 @@
       $('drawerBackdrop').classList.toggle('open');
     }
 
+    // ── Color Picker ↔ Hex Sync ──
+    function syncColorHex(colorId, hexId) {
+      $(hexId).value = $(colorId).value;
+    }
+    function syncHexColor(hexId, colorId) {
+      let val = $(hexId).value.trim();
+      if (!val.startsWith('#')) val = '#' + val;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        $(colorId).value = val;
+      }
+    }
+
     // ── File Picker ──
     function browseFile(urlFieldId) {
       const fileInputId = urlFieldId === 'logoUrl' ? 'logoFile' : 'bannerFile';
@@ -808,8 +878,11 @@
         bannerLink:      $('bannerLink').value.trim(),
         websiteUrl:      $('websiteUrl').value.trim(),
         nameColor:       $('nameColor').value,
-        sigWidth:        parseInt($('sigWidth').value) || 500,
-        sigHeight:       parseInt($('sigHeight').value) || 0
+        sigWidth:        $('sigWidth') ? parseInt($('sigWidth').value) : 380,
+        sigHeight:       $('sigHeight') ? parseInt($('sigHeight').value) : 160,
+        textColor:       $('textColor') ? $('textColor').value : '#14191c',
+        barColor:        $('barColor') ? $('barColor').value : '#b22c2e',
+        iconColor:       $('iconColor') ? $('iconColor').value : '#14191c'
       };
     }
 
@@ -822,6 +895,8 @@
     };
 
     // ── Build one contact row ──
+    let currentTextColor = '#14191c';
+
     function iconRow(iconKey, text, href, displayText, opts = {}) {
       const isLast    = opts.last || false;
       const fieldName = opts.field || '';
@@ -831,14 +906,14 @@
       const fontSize  = iconKey === 'linkedin' ? '8' : '10';
       const isTel     = href && href.startsWith('tel:');
       const target    = isTel ? '' : ' target="_blank"';
-      // For tel: links, don't escape the href (keep tel:+1... clean)
       const safeHref  = isTel ? href : esc(href || '#');
+      const tc        = currentTextColor;
 
       let content;
       if (href) {
-        content = `<a href="${safeHref}"${target} style="color:#14191c;text-decoration:none;font-size:11px;font-family:'Montserrat',Arial,Helvetica,sans-serif;">${esc(displayText || text)}</a>`;
+        content = `<a href="${safeHref}"${target} style="color:${tc};text-decoration:none;font-size:11px;font-family:'Montserrat',Arial,Helvetica,sans-serif;">${esc(displayText || text)}</a>`;
       } else {
-        content = `<span style="font-size:11px;color:#14191c;font-family:'Montserrat',Arial,Helvetica,sans-serif;">${esc(text)}</span>`;
+        content = `<span style="font-size:11px;color:${tc};font-family:'Montserrat',Arial,Helvetica,sans-serif;">${esc(text)}</span>`;
       }
 
       return `
@@ -846,20 +921,24 @@
           <td width="18" style="padding-bottom:${pb}px;" valign="middle">
             <a href="${safeHref}"${target} style="text-decoration:none !important;border:0;display:block;color:#ffffff !important;">
               <table cellpadding="0" cellspacing="0" border="0"><tr>
-                <td width="18" height="18" bgcolor="#14191c" style="background-color:#14191c;color:#ffffff !important;font-size:${fontSize}px;${isBold ? 'font-weight:bold;' : ''}font-family:Arial,sans-serif;text-align:center;line-height:18px;border-radius:9px;-webkit-border-radius:9px;" align="center">
+                <td width="18" height="18" bgcolor="${currentIconColor}" style="background-color:${currentIconColor};color:#ffffff !important;font-size:${fontSize}px;${isBold ? 'font-weight:bold;' : ''}font-family:Arial,sans-serif;text-align:center;line-height:18px;border-radius:9px;-webkit-border-radius:9px;" align="center">
                   <span style="color:#ffffff !important;text-decoration:none !important;">${iconChar}</span>
                 </td>
               </tr></table>
             </a>
           </td>
-          <td style="padding:0 0 ${pb}px 8px;vertical-align:middle;" valign="middle">
+          <td data-text="1" height="18" style="padding:0 0 ${pb}px 8px;vertical-align:middle;height:18px;line-height:18px;word-break:break-all;overflow-wrap:break-word;max-width:200px;" valign="middle">
             ${content}
           </td>
         </tr>`;
     }
 
     // ── Generate full signature HTML ──
+    let currentIconColor = '#14191c';
+
     function buildSignatureHTML(v) {
+      currentTextColor = v.textColor || '#14191c';
+      currentIconColor = v.iconColor || '#14191c';
       const logoImg = v.logoUrl
         ? `<img src="${esc(v.logoUrl)}" width="80" style="display:block;border:0;width:80px;" alt="Vista Site Selection">`
         : `<span style="color:#ffffff;font-size:48px;font-weight:bold;font-family:Arial,sans-serif;">V</span>`;
@@ -889,23 +968,23 @@
       </a>
     </td>
     <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;">&nbsp;</td>
-    <td width="2" bgcolor="${v.nameColor}" style="background-color:${v.nameColor};font-size:1px;line-height:1px;width:2px;min-width:2px;">&nbsp;</td>
+    <td width="2" bgcolor="${v.barColor}" style="background-color:${v.barColor};font-size:1px;line-height:1px;width:2px;min-width:2px;">&nbsp;</td>
     <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;">&nbsp;</td>
-    <td valign="top" style="padding:0;">
-      <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%" style="height:100%;">
+    <td valign="top" width="100%" style="padding:0;width:100%;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%" style="height:100%;width:100%;">
         <tr>
-          <td valign="top" data-field="name" style="padding:4px 0 0 0;font-size:18px;font-weight:800;color:${v.nameColor};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.2;">
+          <td valign="top" data-field="name" style="padding:4px 0 0 0;font-size:18px;font-weight:800;color:${v.nameColor};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.2;word-break:break-word;overflow-wrap:break-word;">
             ${esc(v.name)}
           </td>
         </tr>
         <tr>
-          <td valign="top" data-field="title" style="font-size:11px;font-weight:700;color:#14191c;font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.3;height:30px;" height="30">
+          <td valign="top" data-field="title" style="font-size:11px;font-weight:700;color:${v.textColor};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.3;height:30px;word-break:break-word;overflow-wrap:break-word;" height="30">
             ${esc(v.title)}
           </td>
         </tr>
         <tr>
-          <td valign="bottom" style="padding:0 0 4px 0;">
-            <table cellpadding="0" cellspacing="0" border="0">
+          <td valign="bottom" style="padding:2px 0 0 0;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
               ${iconRow('phone', v.phone, 'tel:+1' + v.phone.replace(/\./g, ''), v.phone, { field: 'phone' })}
               ${iconRow('email', v.email, 'mailto:' + v.email, v.email, { field: 'email' })}
               ${iconRow('web', v.websiteUrl, 'https://' + v.websiteUrl, v.websiteUrl, { last: websiteLast, field: 'website' })}
@@ -1025,8 +1104,8 @@
       3. Paste into Outlook signature settings
     </div>
   </div>
-  <button class="select-btn" onclick="selectSig()">TAP HERE TO SELECT SIGNATURE</button>
   <div class="signature-area" id="sig">${html}</div>
+  <button class="select-btn" onclick="selectSig()">TAP HERE TO SELECT SIGNATURE</button>
   <scr` + `ipt>
     function selectSig() {
       var sig = document.getElementById('sig');
@@ -1112,6 +1191,7 @@
       document.querySelectorAll('.emp-card')[index].classList.add('active');
 
       updatePreview();
+      updateMetaHints();
 
       // Scroll preview into view in right column
       $('previewBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1120,6 +1200,11 @@
     }
 
     // ── Preview Mode (Light / Dark) ──
+    function toggleWireframe(btn) {
+      $('previewBox').classList.toggle('show-wireframe');
+      btn.classList.toggle('active');
+    }
+
     function setPreviewMode(mode, btn) {
       const box = $('previewBox');
       box.classList.toggle('dark-mode', mode === 'dark');
@@ -1145,13 +1230,16 @@
       'email': '[data-field="email"]',
       'linkedin': '[data-field="linkedin"]',
       'linkedinDisplay': '[data-field="linkedin"]',
+      'websiteUrl': '[data-field="website"]',
       'logoUrl': '[data-field="logo"]',
       'bannerUrl': '[data-field="banner"]',
       'bannerLink': '[data-field="banner"]',
-      'sigWidth': '[data-field="wrapper"]',
-      'sigHeight': '[data-field="wrapper"]',
-      'websiteUrl': '[data-field="website"]',
-      'nameColor': '[data-field="name"]'
+      'nameColor': '[data-field="name"]',
+      'barColor': 'td[width="2"]',
+      'textColor': '[data-field="title"], [data-field="phone"] [data-text], [data-field="email"] [data-text], [data-field="website"] [data-text], [data-field="linkedin"] [data-text]',
+      'iconColor': 'td[width="18"][height="18"]',
+      'iconColorHex': 'td[width="18"][height="18"]',
+      'barColorHex': 'td[width="2"]'
     };
 
     let activeField = null;
@@ -1161,12 +1249,13 @@
       if (activeField) {
         const selector = fieldMap[activeField];
         if (selector) {
-          const target = $('previewBox').querySelector(selector);
-          if (target) target.classList.add('preview-highlight');
+          const targets = $('previewBox').querySelectorAll(selector);
+          targets.forEach(t => t.classList.add('preview-highlight'));
         }
       }
     }
 
+    // Focus-based highlighting (stays on while editing)
     Object.keys(fieldMap).forEach(inputId => {
       const input = $(inputId);
       if (!input) return;
@@ -1180,9 +1269,66 @@
       });
     });
 
+    // Hover-based highlighting (shows on mouse over form group)
+    const hoverSelectorMap = {
+      'bar': 'td[width="2"]',
+      'icons': 'td[width="18"][height="18"]',
+      'alltext': '[data-field="title"], [data-field="phone"] [data-text], [data-field="email"] [data-text], [data-field="website"] [data-text], [data-field="linkedin"] [data-text]'
+    };
+
+    document.querySelectorAll('.form-group[data-highlights]').forEach(group => {
+      const fieldName = group.dataset.highlights;
+      const selector = hoverSelectorMap[fieldName] || '[data-field="' + fieldName + '"]';
+      group.addEventListener('mouseenter', () => {
+        if (!activeField) {
+          const targets = $('previewBox').querySelectorAll(selector);
+          targets.forEach(t => t.classList.add('preview-highlight'));
+        }
+      });
+      group.addEventListener('mouseleave', () => {
+        if (!activeField) {
+          applyHighlight();
+        }
+      });
+    });
+
+    // ── Meta Hints (live link preview under inputs) ──
+    function updateMetaHints() {
+      const phone = $('phone').value;
+      const email = $('email').value;
+      const linkedin = $('linkedin').value;
+      const name = $('fullName').value;
+      const title = $('title').value;
+      const liDisplay = $('linkedinDisplay').value;
+      const website = $('websiteUrl').value;
+      const nameColor = $('nameColor') ? $('nameColor').value : '#b22c2e';
+      const textColor = $('textColor') ? $('textColor').value : '#14191c';
+      const sigWidth = '380';
+      const sigHeight = '160';
+      const bannerLink = $('bannerLink') ? $('bannerLink').value : '';
+
+      $('metaName').innerHTML = '<span class="meta-label">DISPLAY:</span> ' + (name ? name.toUpperCase() : 'enter name') + '<br><span class="meta-label">ACTION:</span> none';
+      $('metaTitle').innerHTML = '<span class="meta-label">DISPLAY:</span> ' + (title ? (title.length > 40 ? title.substring(0,40) + '...' : title) : 'enter title') + '<br><span class="meta-label">ACTION:</span> none';
+      $('metaPhone').innerHTML = '<span class="meta-label">DISPLAY:</span> ' + (phone || '—') + '<br><span class="meta-label">ACTION:</span> ' + (phone ? 'tel:+1' + phone.replace(/\./g, '') : 'none');
+      $('metaEmail').innerHTML = '<span class="meta-label">DISPLAY:</span> ' + (email || '—') + '<br><span class="meta-label">ACTION:</span> ' + (email ? 'mailto:' + email : 'none');
+      $('metaWebsite').innerHTML = '<span class="meta-label">DISPLAY:</span> ' + (website || '—') + '<br><span class="meta-label">ACTION:</span> ' + (website ? 'https://' + website : 'none');
+      $('metaLinkedin').innerHTML = '<span class="meta-label">DISPLAY:</span> see display text below' + '<br><span class="meta-label">ACTION:</span> ' + (linkedin ? 'opens ' + linkedin : 'none');
+      $('metaLinkedinDisplay').innerHTML = '<span class="meta-label">DISPLAY:</span> ' + (liDisplay || 'auto-derived') + '<br><span class="meta-label">ACTION:</span> none (uses URL above)';
+
+      // Branding hints
+      if ($('metaNameColor')) $('metaNameColor').innerHTML = '<span class="meta-label">APPLIES TO:</span> name text only';
+      if ($('metaBarColor')) $('metaBarColor').innerHTML = '<span class="meta-label">APPLIES TO:</span> vertical divider bar';
+      if ($('metaTextColor')) $('metaTextColor').innerHTML = '<span class="meta-label">APPLIES TO:</span> title + contact info text';
+      if ($('metaIconColor')) $('metaIconColor').innerHTML = '<span class="meta-label">APPLIES TO:</span> icon circle backgrounds';
+      if ($('metaBarColor')) $('metaBarColor').innerHTML = '<span class="meta-label">APPLIES TO:</span> vertical divider bar';
+      if ($('metaIconColor')) $('metaIconColor').innerHTML = '<span class="meta-label">APPLIES TO:</span> icon circle backgrounds';
+      if ($('metaBanner')) $('metaBanner').innerHTML = '<span class="meta-label">DISPLAY:</span> full-width footer banner<br><span class="meta-label">ACTION:</span> ' + (bannerLink ? 'opens ' + bannerLink : 'none') + '<br><span class="meta-label">RECOMMENDED:</span> 1138 x 200px (wide rectangle)';
+    }
+
     // ── Initialize ──
     buildEmployeeGrid();
     updatePreview();
+    updateMetaHints();
   </script>
 </body>
 </html>
