@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Logo Composite Creator</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 40px; background: #333; color: white; text-align: center; }
+  canvas { border: 2px solid #666; margin: 20px; }
+  .controls { margin: 20px; }
+  .controls label { margin: 0 10px; }
+  .controls input { width: 80px; padding: 4px; }
+  button { padding: 12px 24px; font-size: 16px; cursor: pointer; background: #b22c2e; color: white; border: none; margin: 10px; }
+  button:hover { background: #8f2325; }
+  .preview-row { display: flex; justify-content: center; gap: 40px; align-items: start; }
+  .preview-label { font-size: 12px; color: #999; margin-top: 8px; }
+</style>
+</head>
+<body>
+  <h1>Vista V Logo — Composite Creator</h1>
+  <p>This creates a white-background rectangle with the V logo centered, at the exact dimensions needed for the email signature.</p>
+
+  <div class="controls">
+    <label>Width: <input type="number" id="w" value="240"></label>
+    <label>Height: <input type="number" id="h" value="468"></label>
+    <label>Logo Size: <input type="number" id="logoSize" value="200"></label>
+    <button onclick="generate()">Generate</button>
+    <button onclick="downloadPNG()">Download PNG</button>
+  </div>
+
+  <div class="preview-row">
+    <div>
+      <canvas id="canvas" width="240" height="468"></canvas>
+      <div class="preview-label">Composite (white bg)</div>
+    </div>
+    <div>
+      <div style="background:#1a1a1a; padding:20px; display:inline-block;">
+        <canvas id="darkPreview" width="240" height="468"></canvas>
+      </div>
+      <div class="preview-label">Dark mode preview</div>
+    </div>
+  </div>
+
+  <p style="color:#999; margin-top:20px;">After downloading, upload to Imgur and paste the direct link into the signature generator's V Logo Image URL field.</p>
+
+  <script>
+    const logo = new Image();
+    logo.crossOrigin = 'anonymous';
+    logo.src = 'https://i.imgur.com/03IUPTd.gif';
+    logo.onload = () => generate();
+
+    function generate() {
+      const w = parseInt(document.getElementById('w').value);
+      const h = parseInt(document.getElementById('h').value);
+      const logoSize = parseInt(document.getElementById('logoSize').value);
+
+      // Main canvas
+      const canvas = document.getElementById('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+
+      // White background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+
+      // Center the logo
+      const logoW = logoSize;
+      const logoH = logoSize * (logo.naturalHeight / logo.naturalWidth);
+      const x = (w - logoW) / 2;
+      const y = (h - logoH) / 2;
+      ctx.drawImage(logo, x, y, logoW, logoH);
+
+      // Dark preview
+      const dark = document.getElementById('darkPreview');
+      dark.width = w;
+      dark.height = h;
+      const dctx = dark.getContext('2d');
+      dctx.drawImage(canvas, 0, 0);
+    }
+
+    function downloadPNG() {
+      const canvas = document.getElementById('canvas');
+      const link = document.createElement('a');
+      link.download = 'vista-v-logo-white-bg.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>

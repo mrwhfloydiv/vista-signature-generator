@@ -1,0 +1,26 @@
+# Photoshop / design source files (stay local)
+*.psd
+*.psb
+
+# Local image assets (signature uses Imgur-hosted versions, not these)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+IMAGES FOR  SIGNATURE/
+
+# Orphaned subfolder (has its own .git, not used)
+email_signature_generator_WF_2026/
+
+# Local Claude Code config (personal allowlists)
+.claude/settings.local.json
+
+# Project notes (local-only context for Claude — not for public repo)
+CLAUDE.md
+
+# Editor / OS junk
+.DS_Store
+Thumbs.db
+*.tmp
+*.tmp.*
