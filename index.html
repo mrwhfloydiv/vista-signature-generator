@@ -4,67 +4,118 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vista Site Selection — Email Signature Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --vista-black: #14191c;
+      --vista-red: #b22c2e;
+      --vista-red-dark: #8e2123;
+      --paper: #eceef1;
+      --ink: #14191c;
+      --ink-soft: #5a6168;
+      --line: #d8dbdf;
+      --line-soft: #e3e6ea;
+      --radius: 14px;
+      --radius-lg: 22px;
+      --shadow-sm: 0 1px 2px rgba(20,25,28,.04), 0 1px 3px rgba(20,25,28,.06);
+      --shadow-md: 0 4px 14px rgba(20,25,28,.08), 0 2px 6px rgba(20,25,28,.04);
+      --shadow-lg: 0 24px 60px rgba(20,25,28,.10), 0 8px 20px rgba(20,25,28,.06);
+      --t: 220ms cubic-bezier(.22,.61,.36,1);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; font-family: 'Montserrat', Arial, sans-serif; background: #0d1117; color: #333; }
+    html, body {
+      height: 100%; overflow: hidden;
+      font-family: 'Manrope', system-ui, sans-serif;
+      background:
+        radial-gradient(900px 500px at 88% -200px, rgba(181,217,238,.20), transparent 60%),
+        radial-gradient(700px 400px at -80px 600px, rgba(235,170,31,.08), transparent 60%),
+        var(--paper);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
 
     /* ── Header ── */
     .header {
-      background: #000000;
-      color: white;
-      padding: 12px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(236,238,241,.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
       flex-shrink: 0;
-      z-index: 10;
-      border-bottom: 3px solid #b22c2e;
     }
-    .header-left { display: flex; flex-direction: column; gap: 6px; }
-    .header h1 { font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
-    .header-logo { width: 160px; height: auto; display: block; opacity: 0.4; }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-logo { width: 34px; height: auto; display: block; transition: transform var(--t); }
+    .header-logo:hover { transform: translateY(-2px) rotate(-3deg); }
+    .header-brand {
+      display: flex;
+      flex-direction: column;
+    }
+    .header-brand-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: var(--ink);
+    }
+    .header-brand-name em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--vista-red);
+      font-weight: 400;
+      font-size: 1.22em;
+    }
+    .header h1 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin: 0;
+    }
     .help-btn {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 20px;
-      background: transparent;
-      color: rgba(255,255,255,0.5);
-      border: 2px solid rgba(255,255,255,0.15);
-      border-radius: 0;
-      font-family: 'Montserrat', Arial, sans-serif;
-      font-size: 10px;
-      font-weight: 800;
+      padding: 9px 16px;
+      background: white;
+      color: var(--ink-soft);
+      border: 1.5px solid var(--line);
+      border-radius: 999px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
+      transition: all var(--t);
+      letter-spacing: .08em;
       position: relative;
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
-    .help-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: #b22c2e;
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: -1;
+    .help-btn:hover {
+      background: var(--vista-red);
+      color: white;
+      border-color: var(--vista-red);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(178,44,46,.20);
     }
-    .help-btn:hover::before { transform: scaleX(1); }
-    .help-btn:hover { color: #ffffff; border-color: #b22c2e; box-shadow: 0 0 20px rgba(178,44,46,0.4); }
 
     /* ── App Layout ── */
-    .app { display: flex; height: calc(100vh - 72px); }
+    .app { display: flex; height: calc(100vh - 65px); position: relative; z-index: 1; }
 
     /* ── Left Column ── */
     .col-left {
       width: 400px;
       min-width: 400px;
-      background: #ffffff;
-      border-right: 1px solid #e8e8e8;
+      background: white;
+      border-right: 1px solid var(--line);
       overflow-y: auto;
       padding: 0;
       flex-shrink: 0;
@@ -73,24 +124,23 @@
     }
     .col-left::-webkit-scrollbar { width: 5px; }
     .col-left::-webkit-scrollbar-track { background: transparent; }
-    .col-left::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 3px; }
-    .col-left::-webkit-scrollbar-thumb:hover { background: #aaa; }
+    .col-left::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+    .col-left::-webkit-scrollbar-thumb:hover { background: var(--ink-soft); }
 
     /* ── Right Column ── */
     .col-right {
       flex: 1;
       overflow-y: auto;
       padding: 28px 32px;
-      background: linear-gradient(180deg, #f5f5f5 0%, #ebebeb 100%);
     }
     .col-right::-webkit-scrollbar { width: 5px; }
     .col-right::-webkit-scrollbar-track { background: transparent; }
-    .col-right::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-    .col-right::-webkit-scrollbar-thumb:hover { background: #aaa; }
+    .col-right::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+    .col-right::-webkit-scrollbar-thumb:hover { background: var(--ink-soft); }
 
     /* ── Sections in Left Column ── */
-    .section { padding: 22px 24px; border-bottom: 1px solid #f0f0f0; }
-    .section:hover { background: #fafbfc; }
+    .section { padding: 22px 24px; border-bottom: 1px solid var(--line-soft); }
+    .section:hover { background: rgba(236,238,241,.3); }
     .section-header {
       display: flex;
       align-items: center;
@@ -100,17 +150,17 @@
       padding: 2px 0;
     }
     .section-header h2 {
-      font-size: 12px;
-      font-weight: 800;
-      color: #14191c;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -.02em;
       margin: 0;
     }
     .section-header .chevron {
-      font-size: 16px;
-      color: #b22c2e;
-      transition: transform 0.25s ease;
+      font-size: 14px;
+      color: var(--vista-red);
+      transition: transform var(--t);
       line-height: 1;
     }
     .section-header .chevron.open { transform: rotate(90deg); }
@@ -121,165 +171,200 @@
     .form-group { margin-bottom: 16px; }
     .form-group label {
       display: block;
-      font-size: 9px;
-      font-weight: 800;
-      color: #aaa;
-      margin-bottom: 5px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: .16em;
     }
     .form-group input[type="text"],
     .form-group input[type="number"],
     .form-group input[type="url"] {
       width: 100%;
-      padding: 10px 14px;
-      border: 2px solid #e8e8e8;
-      border-radius: 0;
-      font-size: 13px;
-      font-family: 'Montserrat', Arial, sans-serif;
-      transition: all 0.2s;
-      background: #fafbfc;
+      padding: 10px 12px;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Manrope', system-ui, sans-serif;
+      font-weight: 500;
+      transition: border-color var(--t), background var(--t);
+      background: var(--paper);
+      color: var(--ink);
+      outline: none;
     }
-    .form-group input:hover { border-color: #ccc; background: #fff; }
-    .form-group input:focus { outline: none; border-color: #b22c2e; background: #fff; box-shadow: 0 0 0 3px rgba(178,44,46,0.08); }
+    .form-group input:hover { border-color: var(--ink-soft); }
+    .form-group input:focus { border-color: var(--vista-red); background: white; }
     .form-group input[type="color"] {
       width: 100%;
       height: 38px;
       padding: 3px;
-      border: 2px solid #e8e8e8;
-      border-radius: 0;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
       cursor: pointer;
       background: white;
     }
-    .form-group input[type="color"]:focus { border-color: #b22c2e; }
+    .form-group input[type="color"]:focus { border-color: var(--vista-red); }
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
     /* ── Meta Hints ── */
     .meta-hint {
-      font-size: 9px;
-      font-family: 'Consolas', monospace;
-      color: #b22c2e;
-      margin-top: 4px;
-      opacity: 0.6;
-      letter-spacing: 0.3px;
+      font-size: 9.5px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--vista-red);
+      margin-top: 5px;
+      opacity: 0.5;
+      letter-spacing: .06em;
       line-height: 1.6;
-      transition: opacity 0.2s;
+      transition: opacity var(--t);
     }
     .form-group:hover .meta-hint,
-    .form-group:focus-within .meta-hint {
-      opacity: 1;
-    }
+    .form-group:focus-within .meta-hint { opacity: 1; }
     .meta-hint .meta-label {
-      color: #999;
-      font-weight: 600;
+      color: var(--ink-soft);
+      font-weight: 500;
     }
 
     /* ── File Picker ── */
     .file-input-row { display: flex; gap: 6px; align-items: stretch; }
     .file-input-row input[type="text"] { flex: 1; min-width: 0; font-size: 11px; }
     .btn-browse {
-      padding: 8px 12px;
-      background: #14191c;
+      padding: 8px 14px;
+      background: var(--vista-black);
       color: white;
       border: none;
-      border-radius: 0;
-      font-family: 'Montserrat', Arial, sans-serif;
+      border-radius: 10px;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 9px;
-      font-weight: 800;
+      font-weight: 500;
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.2s;
+      transition: all var(--t);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: .08em;
     }
-    .btn-browse:hover { background: #b22c2e; }
+    .btn-browse:hover { background: var(--vista-red); transform: translateY(-1px); }
 
     /* ── Right Column Cards ── */
     .card {
       background: white;
-      border-radius: 0;
+      border-radius: var(--radius-lg);
       padding: 28px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      box-shadow: var(--shadow-sm);
       margin-bottom: 24px;
-      border: 1px solid rgba(0,0,0,0.04);
+      border: 1px solid var(--line);
     }
     .card h3 {
-      font-size: 11px;
-      font-weight: 800;
-      color: #14191c;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -.02em;
       margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 3px solid #b22c2e;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .card h3 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--vista-red);
+      font-weight: 400;
     }
 
     /* ── Preview ── */
     .preview-box {
       background: #fafafa;
-      border: 1px solid #e8e8e8;
-      border-radius: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
       padding: 28px;
       margin-bottom: 20px;
       overflow-x: auto;
       transition: background 0.3s;
     }
 
-    /* ── Buttons ── */
-    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn {
-      padding: 14px 24px;
-      border: none;
-      border-radius: 0;
-      font-family: 'Montserrat', Arial, sans-serif;
-      font-size: 11px;
-      font-weight: 800;
+    /* ── Stacked Action Buttons ── */
+    .action-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 14px 20px;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      transition: all var(--t);
+      letter-spacing: .02em;
       position: relative;
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
-    .btn-red {
-      background: #b22c2e;
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--vista-red);
+      transform: translateX(-101%);
+      transition: transform 420ms cubic-bezier(.65,0,.35,1);
+      z-index: 0;
+    }
+    .action-btn:hover::before { transform: translateX(0); }
+    .action-btn:hover {
       color: white;
-      box-shadow: 0 2px 8px rgba(178,44,46,0.2);
-    }
-    .btn-red:hover {
-      background: #d4343a;
+      border-color: var(--vista-red);
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(178,44,46,0.4);
-      letter-spacing: 2px;
+      box-shadow: 0 10px 30px rgba(178,44,46,.18);
     }
-    .btn-red:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(178,44,46,0.2); }
-    .btn-red.copied {
-      background: #28a745 !important;
-      box-shadow: 0 8px 24px rgba(40,167,69,0.4) !important;
+    .action-btn:hover .action-info { color: rgba(255,255,255,.6); }
+    .action-btn .action-label,
+    .action-btn .action-info { position: relative; z-index: 1; }
+    .action-btn .action-info {
+      font-size: 16px;
+      color: var(--line);
+      transition: color var(--t);
+      cursor: help;
     }
-    .btn-dark {
-      background: #14191c;
+
+    /* Primary (New Outlook) */
+    .action-btn.primary {
+      background: var(--vista-black);
       color: white;
-      border: 2px solid #14191c;
+      border-color: var(--vista-black);
+      box-shadow: 0 10px 30px rgba(20,25,28,.18);
     }
-    .btn-dark:hover {
-      background: #2a3038;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-    }
-    .btn-outline {
-      background: white;
-      color: #555;
-      border: 2px solid #ddd;
-    }
-    .btn-outline:hover {
-      background: #14191c;
+    .action-btn.primary .action-info { color: rgba(255,255,255,.35); }
+    .action-btn.primary:hover .action-info { color: rgba(255,255,255,.6); }
+
+    /* Primary Alt (Classic Outlook) */
+    .action-btn.primary-alt {
+      background: var(--vista-black);
       color: white;
-      border-color: #14191c;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      border-color: var(--vista-black);
+      box-shadow: 0 10px 30px rgba(20,25,28,.18);
     }
+    .action-btn.primary-alt::before { background: var(--vista-red-dark); }
+    .action-btn.primary-alt .action-info { color: rgba(255,255,255,.35); }
+    .action-btn.primary-alt:hover .action-info { color: rgba(255,255,255,.6); }
+
+    /* Copied state */
+    .action-btn.copied {
+      background: #166534 !important;
+      border-color: #166534 !important;
+      color: white !important;
+      box-shadow: 0 10px 30px rgba(22,101,52,.25) !important;
+    }
+    .action-btn.copied::before { transform: translateX(-101%) !important; }
 
     /* ── Employee Cards ── */
     .emp-grid {
@@ -292,42 +377,40 @@
       align-items: center;
       gap: 14px;
       padding: 14px 16px;
-      background: #fafbfc;
-      border: 2px solid transparent;
-      border-left: 3px solid #e0e0e0;
-      border-radius: 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all var(--t);
     }
     .emp-card:hover {
-      border-left-color: #b22c2e;
-      background: #fff;
-      transform: translateX(4px);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-color: var(--vista-black);
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
     .emp-card.active {
-      border-left-color: #b22c2e;
-      background: #fff5f5;
-      border-color: rgba(178,44,46,0.2);
-      border-left-color: #b22c2e;
-      box-shadow: 0 2px 12px rgba(178,44,46,0.1);
+      border-color: var(--vista-red);
+      background: white;
+      box-shadow: 0 4px 14px rgba(178,44,46,.12);
     }
     .emp-avatar {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #14191c, #2a3038);
+      background: linear-gradient(135deg, var(--vista-black), #2a3038);
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
       font-size: 13px;
       flex-shrink: 0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
-    .emp-name { font-weight: 700; font-size: 12px; color: #14191c; line-height: 1.3; }
-    .emp-title { font-size: 10px; color: #999; margin-top: 2px; line-height: 1.3; }
+    .emp-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; color: var(--ink); line-height: 1.3; }
+    .emp-title { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; color: var(--ink-soft); margin-top: 2px; line-height: 1.3; letter-spacing: .04em; }
 
     /* ── Toast ── */
     .toast {
@@ -335,19 +418,19 @@
       bottom: 28px;
       left: 50%;
       transform: translateX(-50%) translateY(16px);
-      background: #14191c;
+      background: var(--vista-black);
       color: white;
       padding: 14px 32px;
-      border-radius: 0;
-      border-left: 4px solid #b22c2e;
+      border-radius: 999px;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 600;
       opacity: 0;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 999;
       pointer-events: none;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      letter-spacing: 0.3px;
+      box-shadow: var(--shadow-lg);
+      letter-spacing: .02em;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -355,7 +438,7 @@
     .drawer-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(20,25,28,0.4);
       z-index: 100;
       opacity: 0;
       pointer-events: none;
@@ -373,114 +456,113 @@
       z-index: 101;
       transform: translateX(100%);
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: -8px 0 32px rgba(0,0,0,0.2);
+      box-shadow: -8px 0 32px rgba(20,25,28,0.2);
       display: flex;
       flex-direction: column;
     }
     .drawer.open { transform: translateX(0); }
     .drawer-header {
       padding: 22px 28px;
-      background: #b22c2e;
+      background: var(--vista-black);
       color: white;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
     }
-    .drawer-header h2 { font-size: 15px; font-weight: 800; margin: 0; letter-spacing: 0.5px; }
+    .drawer-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
     .drawer-close {
       width: 32px;
       height: 32px;
       border-radius: 50%;
       border: none;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.15);
       color: white;
       font-size: 18px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      transition: all var(--t);
     }
-    .drawer-close:hover { background: rgba(255,255,255,0.4); transform: rotate(90deg); }
+    .drawer-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
     .drawer-body {
-      padding: 24px;
+      padding: 28px;
       overflow-y: auto;
       flex: 1;
     }
-    .drawer-body h3 { font-size: 14px; font-weight: 700; color: #14191c; margin: 20px 0 10px 0; }
+    .drawer-body h3 { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600; color: var(--ink); margin: 24px 0 10px 0; letter-spacing: -.01em; }
     .drawer-body h3:first-child { margin-top: 0; }
     .drawer-body ol { padding-left: 18px; }
-    .drawer-body li { margin-bottom: 12px; font-size: 13px; line-height: 1.6; color: #555; }
-    .drawer-body li b { color: #14191c; }
+    .drawer-body li { margin-bottom: 12px; font-size: 13px; line-height: 1.7; color: var(--ink-soft); }
+    .drawer-body li b { color: var(--ink); }
     .drawer-body code {
-      background: #f0f0f0;
-      padding: 2px 6px;
-      border-radius: 0;
+      background: var(--paper);
+      padding: 2px 8px;
+      border-radius: 6px;
       font-size: 12px;
-      font-family: 'Consolas', monospace;
+      font-family: 'IBM Plex Mono', monospace;
     }
     .drawer-body .tip {
-      background: #f0f8ff;
-      border-left: 4px solid #007bff;
-      padding: 12px 16px;
-      border-radius: 0;
+      background: var(--paper);
+      border-left: 3px solid var(--vista-red);
+      padding: 14px 18px;
+      border-radius: 0 var(--radius) var(--radius) 0;
       font-size: 12px;
-      line-height: 1.6;
-      margin-top: 16px;
-      color: #555;
+      line-height: 1.7;
+      margin-top: 20px;
+      color: var(--ink-soft);
     }
-    .drawer-body .tip b { color: #14191c; }
+    .drawer-body .tip b { color: var(--ink); }
 
     /* ── Note Box ── */
     .note {
-      background: #f8f5ee;
-      border-left: 3px solid #c4a035;
-      border-radius: 0;
-      padding: 10px 14px;
+      background: var(--paper);
+      border-left: 3px solid var(--line);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 10px;
-      line-height: 1.6;
+      line-height: 1.7;
       margin-bottom: 14px;
-      color: #7a6a3a;
+      color: var(--ink-soft);
+      letter-spacing: .04em;
     }
-    .note b { color: #5a4d2a; }
+    .note b { color: var(--ink); }
     .note-danger {
-      background: #b22c2e;
+      background: var(--vista-red);
       border-left: none;
+      border-radius: 10px;
       color: rgba(255,255,255,0.9);
       padding: 12px 16px;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 10px;
-      font-weight: 600;
-      line-height: 1.6;
+      font-weight: 500;
+      line-height: 1.7;
       margin-bottom: 16px;
       animation: pulse-danger 2.5s ease-in-out infinite;
-      letter-spacing: 0.3px;
+      letter-spacing: .06em;
     }
     .note-danger b { color: #ffffff; }
     @keyframes pulse-danger {
-      0%, 100% { background: #b22c2e; }
-      50% { background: #8f2325; }
+      0%, 100% { background: var(--vista-red); }
+      50% { background: var(--vista-red-dark); }
     }
 
     /* ── Preview Highlight (Cyan overlay) ── */
-    .preview-highlight {
-      position: relative;
-    }
-    .preview-highlight {
-      overflow: hidden;
-    }
+    .preview-highlight { position: relative; overflow: hidden; }
     .preview-highlight::after {
       content: '';
       position: absolute;
       inset: 0;
       background: rgba(0, 210, 255, 0.15);
       border: 2px solid rgba(0, 210, 255, 0.6);
-      border-radius: 0;
+      border-radius: 4px;
       pointer-events: none;
       mix-blend-mode: multiply;
     }
 
-    /* ── Wireframe Skeleton (shows all element boundaries) ── */
+    /* ── Wireframe Skeleton ── */
     .preview-box.show-wireframe td,
     .preview-box.show-wireframe table {
       outline: 1px solid rgba(200, 200, 200, 0.4);
@@ -490,78 +572,49 @@
     .mode-toggle {
       display: flex;
       gap: 0;
-      border-radius: 0;
+      border-radius: 999px;
       overflow: hidden;
-      border: 2px solid #e0e0e0;
-      margin-bottom: 16px;
+      border: 1.5px solid var(--line);
     }
     .mode-btn {
-      padding: 7px 18px;
+      padding: 6px 16px;
       border: none;
-      font-family: 'Montserrat', Arial, sans-serif;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 10px;
-      font-weight: 800;
+      font-weight: 500;
       cursor: pointer;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.2s;
-      background: #f0f0f0;
-      color: #aaa;
+      letter-spacing: .08em;
+      transition: all var(--t);
+      background: white;
+      color: var(--ink-soft);
     }
-    .mode-btn:hover { color: #666; }
-    .mode-btn.active { background: #14191c; color: white; }
-    .preview-box.dark-mode {
-      background: #1a1a1a;
-    }
+    .mode-btn:hover { color: var(--ink); }
+    .mode-btn.active { background: var(--vista-black); color: white; }
+    .preview-box.dark-mode { background: #1a1a1a; }
+
     /* Simulate Outlook dark mode color inversion */
     .preview-box.dark-mode a,
-    .preview-box.dark-mode span {
-      color: #e8e8e8 !important;
-    }
-    .preview-box.dark-mode td[data-field="name"] {
-      color: #e8e8e8 !important;
-    }
-    .preview-box.dark-mode td[data-field="title"] {
-      color: #cccccc !important;
-    }
-    /* Icon cells invert in dark mode (simulating Outlook behavior) */
-    .preview-box.dark-mode td[width="18"][height="18"] {
-      background-color: #e0e0e0 !important;
-      color: #1a1a1a !important;
-    }
+    .preview-box.dark-mode span { color: #e8e8e8 !important; }
+    .preview-box.dark-mode td[data-field="name"] { color: #e8e8e8 !important; }
+    .preview-box.dark-mode td[data-field="title"] { color: #cccccc !important; }
+    .preview-box.dark-mode td[data-field="subtitle"] { color: #e89a9b !important; }
+    .preview-box.dark-mode td[style*="font-weight:700"][style*="padding:3px"] { color: #cccccc !important; }
+    .preview-box.dark-mode td[colspan="5"][style*="italic"] { color: #e89a9b !important; }
+    .preview-box.dark-mode td[width="18"][height="18"] { background-color: #e0e0e0 !important; color: #1a1a1a !important; }
     .preview-box.dark-mode td[width="18"][height="18"] span,
-    .preview-box.dark-mode td[width="18"][height="18"] a {
-      color: #1a1a1a !important;
-    }
-    /* White box behind logo stays white in dark mode — matches Outlook behavior */
-    .preview-box.dark-mode td[data-field="logo"] {
-      background-color: #ffffff !important;
-      background: #ffffff !important;
-    }
+    .preview-box.dark-mode td[width="18"][height="18"] a { color: #1a1a1a !important; }
+    .preview-box.dark-mode td[data-field="logo"] { background: #ffffff !important; }
 
     /* ── Image Preview Thumbnail ── */
-    .img-thumb-row {
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .img-thumb {
-      max-height: 40px;
-      max-width: 120px;
-      border-radius: 0;
-      border: 1px solid #e0e0e0;
-      background: #f5f5f5;
-    }
-    .img-thumb-label {
-      font-size: 10px;
-      color: #aaa;
-    }
+    .img-thumb-row { margin-top: 6px; display: flex; align-items: center; gap: 8px; }
+    .img-thumb { max-height: 40px; max-width: 120px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); }
+    .img-thumb-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink-soft); letter-spacing: .06em; }
 
     /* ── Responsive ── */
     @media (max-width: 860px) {
       .app { flex-direction: column; height: auto; }
-      .col-left { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid #e0e0e0; max-height: 50vh; }
+      .col-left { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid var(--line); max-height: 50vh; }
       .col-right { min-height: 50vh; }
       html, body { overflow: auto; }
     }
@@ -572,11 +625,14 @@
   <!-- ════════════ HEADER ════════════ -->
   <div class="header">
     <div class="header-left">
-      <h1>Email Signature Generator</h1>
       <img src="https://i.imgur.com/0P3iYD9.png" alt="Vista Site Selection" class="header-logo">
+      <div class="header-brand">
+        <span class="header-brand-name">VISTA <em>Signatures.</em></span>
+        <h1>Email Signature Generator</h1>
+      </div>
     </div>
     <button class="help-btn" onclick="toggleDrawer()">
-      <span style="font-size:16px;">&#9432;</span> How to Install
+      &#9432;&ensp;How to Install
     </button>
   </div>
 
@@ -600,8 +656,8 @@
           </div>
           <div class="form-group" data-highlights="title">
             <label>Title</label>
-            <input type="text" id="title" value="Senior Vice President, Strategy &amp; Communications" oninput="updatePreview(); updateMetaHints();">
-            <div class="meta-hint" id="metaTitle"><span class="meta-label">DISPLAY:</span> subtitle &nbsp; <span class="meta-label">ACTION:</span> none</div>
+            <input type="text" id="title" value="Senior Vice President,|Strategy &amp; Communications" oninput="updatePreview(); updateMetaHints();">
+            <div class="meta-hint" id="metaTitle"><span class="meta-label">DISPLAY:</span> subtitle &nbsp; <span class="meta-label">ACTION:</span> none<br><span class="meta-label">TIP:</span> use <b>|</b> for a line break</div>
           </div>
           <div class="form-group" data-highlights="phone">
             <label>Phone Number</label>
@@ -627,6 +683,31 @@
             <label>LinkedIn Display Text</label>
             <input type="text" id="linkedinDisplay" value="linkedin.com/in/whfiv/" oninput="updatePreview(); updateMetaHints();">
             <div class="meta-hint" id="metaLinkedinDisplay"><span class="meta-label">DISPLAY:</span> shown text in signature &nbsp; <span class="meta-label">ACTION:</span> none (uses URL above)</div>
+          </div>
+          <!-- Custom fields (shown for employees with custom signatures) -->
+          <div id="customFields" style="display:none;border-top:2px solid #b22c2e;padding-top:16px;margin-top:8px;">
+            <div class="note" style="background:#fff5f5;border-left-color:#b22c2e;color:#b22c2e;">
+              <b>Custom Signature Fields</b> — These fields are specific to this employee's personalized signature.
+            </div>
+            <div class="form-group" data-highlights="name">
+              <label>Subtitle</label>
+              <input type="text" id="subtitle" value="" oninput="updatePreview();" placeholder="e.g. USA and European Union Citizenship">
+              <div class="meta-hint" id="metaSubtitle"><span class="meta-label">DISPLAY:</span> red italic line below title</div>
+            </div>
+            <div class="form-group">
+              <label>Address Line 1</label>
+              <input type="text" id="addressLine1" value="" oninput="updatePreview();" placeholder="Street address">
+              <div class="meta-hint" id="metaAddress"><span class="meta-label">DISPLAY:</span> bold text below subtitle</div>
+            </div>
+            <div class="form-group">
+              <label>Address Line 2</label>
+              <input type="text" id="addressLine2" value="" oninput="updatePreview();" placeholder="City, State ZIP">
+            </div>
+            <div class="form-group" data-highlights="banner">
+              <label>Tagline / CTA</label>
+              <input type="text" id="tagline" value="" oninput="updatePreview();" placeholder='e.g. Free THE SYSTEM access below...'>
+              <div class="meta-hint" id="metaTagline"><span class="meta-label">DISPLAY:</span> red italic text above banner<br><span class="meta-label">TIP:</span> use <b>|</b> for a line break (e.g. "First line|Second line")</div>
+            </div>
           </div>
         </div>
       </div>
@@ -717,7 +798,7 @@
       <!-- Live Preview -->
       <div class="card">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-          <h3 style="margin-bottom:0; border-bottom:none; padding-bottom:0;">Live Preview</h3>
+          <h3 style="margin-bottom:0; border-bottom:none; padding-bottom:0;">Live <em>Preview.</em></h3>
           <div style="display:flex;gap:8px;">
             <div class="mode-toggle">
               <button class="mode-btn active" onclick="setPreviewMode('light', this)">Light</button>
@@ -729,17 +810,33 @@
           </div>
         </div>
         <div class="preview-box" id="previewBox"></div>
-        <div class="btn-row">
-          <button class="btn btn-red" onclick="copyRichText()" style="flex:1;">Copy Signature to Clipboard</button>
-          <button class="btn btn-dark" onclick="openMobileCopy()">Mobile Copy</button>
-          <button class="btn btn-outline" onclick="copyHTML()">Copy HTML</button>
-          <button class="btn btn-outline" onclick="downloadHTML()">Download</button>
+        <div class="action-stack">
+          <button class="action-btn primary" onclick="copyRichText()" title="For New Outlook (Windows 11), Outlook Web, and Gmail. Modern CSS with rounded icon circles.">
+            <span class="action-label">Copy for New Outlook</span>
+            <span class="action-info">&#9432;</span>
+          </button>
+          <button class="action-btn primary-alt" onclick="copyRichText('classic')" title="For Classic Outlook (2016/2019/2021). Square icons, forced spacing, Word-engine optimized.">
+            <span class="action-label">Copy for Classic Outlook</span>
+            <span class="action-info">&#9432;</span>
+          </button>
+          <button class="action-btn" onclick="openMobileCopy()" title="Opens a clean page optimized for copying signatures on phones. Select all, then copy.">
+            <span class="action-label">Mobile Copy</span>
+            <span class="action-info">&#9432;</span>
+          </button>
+          <button class="action-btn" onclick="copyHTML()" title="Copies raw HTML code to clipboard. Paste into your signature editor's source/code view.">
+            <span class="action-label">Copy HTML Code</span>
+            <span class="action-info">&#9432;</span>
+          </button>
+          <button class="action-btn" onclick="downloadHTML()" title="Downloads your signature as a standalone HTML file for manual installation.">
+            <span class="action-label">Download File</span>
+            <span class="action-info">&#9432;</span>
+          </button>
         </div>
       </div>
 
       <!-- Quick Select -->
       <div class="card">
-        <h3>Quick Select — Click Your Name</h3>
+        <h3>Quick <em>Select.</em></h3>
         <div class="emp-grid" id="employeeGrid"></div>
       </div>
 
@@ -882,7 +979,11 @@
         sigHeight:       $('sigHeight') ? parseInt($('sigHeight').value) : 160,
         textColor:       $('textColor') ? $('textColor').value : '#14191c',
         barColor:        $('barColor') ? $('barColor').value : '#b22c2e',
-        iconColor:       $('iconColor') ? $('iconColor').value : '#14191c'
+        iconColor:       $('iconColor') ? $('iconColor').value : '#14191c',
+        subtitle:        $('subtitle') ? $('subtitle').value : '',
+        addressLine1:    $('addressLine1') ? $('addressLine1').value : '',
+        addressLine2:    $('addressLine2') ? $('addressLine2').value : '',
+        tagline:         $('tagline') ? $('tagline').value : ''
       };
     }
 
@@ -896,6 +997,7 @@
 
     // ── Build one contact row ──
     let currentTextColor = '#14191c';
+    let currentIconRadius = '9px';
 
     function iconRow(iconKey, text, href, displayText, opts = {}) {
       const isLast    = opts.last || false;
@@ -921,7 +1023,7 @@
           <td width="18" style="padding-bottom:${pb}px;" valign="middle">
             <a href="${safeHref}"${target} style="text-decoration:none !important;border:0;display:block;color:#ffffff !important;">
               <table cellpadding="0" cellspacing="0" border="0"><tr>
-                <td width="18" height="18" bgcolor="${currentIconColor}" style="background-color:${currentIconColor};color:#ffffff !important;font-size:${fontSize}px;${isBold ? 'font-weight:bold;' : ''}font-family:Arial,sans-serif;text-align:center;line-height:18px;border-radius:9px;-webkit-border-radius:9px;" align="center">
+                <td width="18" height="18" bgcolor="${currentIconColor}" style="background-color:${currentIconColor};color:#ffffff !important;font-size:${fontSize}px;${isBold ? 'font-weight:bold;' : ''}font-family:Arial,sans-serif;text-align:center;line-height:18px;mso-line-height-rule:exactly;border-radius:${currentIconRadius};-webkit-border-radius:${currentIconRadius};" align="center">
                   <span style="color:#ffffff !important;text-decoration:none !important;">${iconChar}</span>
                 </td>
               </tr></table>
@@ -936,19 +1038,25 @@
     // ── Generate full signature HTML ──
     let currentIconColor = '#14191c';
 
-    function buildSignatureHTML(v) {
+    function buildSignatureHTML(v, mode) {
+      const classic = (mode === 'classic');
       currentTextColor = v.textColor || '#14191c';
       currentIconColor = v.iconColor || '#14191c';
+      currentIconRadius = classic ? '0' : '9px';
+
+      // Logo: 584×1138 natural → 80px wide = 156px tall
       const logoImg = v.logoUrl
-        ? `<img src="${esc(v.logoUrl)}" width="80" style="display:block;border:0;width:80px;" alt="Vista Site Selection">`
+        ? `<img src="${esc(v.logoUrl)}" width="80" height="156" style="display:block;border:0;width:80px;height:156px;" alt="Vista Site Selection">`
         : `<span style="color:#ffffff;font-size:48px;font-weight:bold;font-family:Arial,sans-serif;">V</span>`;
 
+      // Banner: 1138×148 natural → scaled to sigWidth
+      const bannerH = Math.round(v.sigWidth * 148 / 1138);
       const bannerHtml = v.bannerUrl
         ? `
   <tr>
     <td colspan="5" data-field="banner" style="padding-top:12px;">
       <a href="${esc(v.bannerLink)}" target="_blank" style="text-decoration:none;">
-        <img src="${esc(v.bannerUrl)}" width="${v.sigWidth}" style="display:block;border:0;max-width:100%;" alt="The System - Click for Access">
+        <img src="${esc(v.bannerUrl)}" width="${v.sigWidth}" height="${bannerH}" style="display:block;border:0;width:${v.sigWidth}px;height:${bannerH}px;max-width:100%;" alt="The System - Click for Access">
       </a>
     </td>
   </tr>`
@@ -960,16 +1068,42 @@
 
       const websiteLast = !v.linkedin;
 
-      return `<table cellpadding="0" cellspacing="0" border="0" data-field="wrapper" style="max-width:${v.sigWidth}px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;" width="${v.sigWidth}">
+      // Custom fields: subtitle, address, tagline
+      const hasCustomRows = !!(v.subtitle || v.addressLine1 || v.addressLine2);
+
+      const subtitleRow = v.subtitle
+        ? `<tr><td data-field="subtitle" style="font-size:11px;font-style:italic;color:${v.nameColor || '#b22c2e'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.3;padding:3px 0 0 0;word-break:break-word;overflow-wrap:break-word;">${esc(v.subtitle)}</td></tr>`
+        : '';
+
+      const addressRow = (v.addressLine1 || v.addressLine2)
+        ? `<tr><td style="font-size:11px;font-weight:700;color:${v.textColor || '#14191c'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.4;padding:3px 0 0 0;word-break:break-word;overflow-wrap:break-word;">${v.addressLine1 ? esc(v.addressLine1) : ''}${v.addressLine2 ? '<br>' + esc(v.addressLine2) : ''}</td></tr>`
+        : '';
+
+      const taglineRow = v.tagline
+        ? `<tr><td colspan="5" style="padding:10px 0 0 0;font-size:11px;font-style:italic;color:${v.nameColor || '#b22c2e'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.5;word-break:break-word;overflow-wrap:break-word;">${esc(v.tagline).replace(/\|/g, '<br>')}</td></tr>`
+        : '';
+
+      // MSO conditional wrapper (Classic Outlook / Word engine)
+      const msoOpen = classic
+        ? `<!--[if mso]><table cellpadding="0" cellspacing="0" border="0" width="${v.sigWidth}"><tr><td><![endif]-->\n`
+        : '';
+      const msoClose = classic
+        ? `\n<!--[if mso]></td></tr></table><![endif]-->`
+        : '';
+
+      // Spacer cells — add mso-line-height-rule for Classic
+      const msoLH = classic ? 'mso-line-height-rule:exactly;' : '';
+
+      return `${msoOpen}<table cellpadding="0" cellspacing="0" border="0" data-field="wrapper" style="max-width:${v.sigWidth}px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;" width="${v.sigWidth}">
   <tr>
-    <td valign="top" data-field="logo" style="width:80px;padding:0;">
-      <a href="https://${esc(v.websiteUrl)}" target="_blank" style="text-decoration:none;border:0;">
+    <td valign="top" data-field="logo" style="width:80px;padding:0;background:#ffffff;">
+      <a href="https://${esc(v.websiteUrl)}" target="_blank" style="text-decoration:none;border:0;display:block;">
         ${logoImg}
       </a>
     </td>
-    <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;">&nbsp;</td>
-    <td width="2" bgcolor="${v.barColor}" style="background-color:${v.barColor};font-size:1px;line-height:1px;width:2px;min-width:2px;">&nbsp;</td>
-    <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;">&nbsp;</td>
+    <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;${msoLH}">&nbsp;</td>
+    <td width="2" bgcolor="${v.barColor}" style="background-color:${v.barColor};font-size:1px;line-height:1px;width:2px;min-width:2px;${msoLH}">&nbsp;</td>
+    <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;${msoLH}">&nbsp;</td>
     <td valign="top" width="100%" style="padding:0;width:100%;">
       <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%" style="height:100%;width:100%;">
         <tr>
@@ -978,10 +1112,12 @@
           </td>
         </tr>
         <tr>
-          <td valign="top" data-field="title" style="font-size:11px;font-weight:700;color:${v.textColor};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.3;height:30px;word-break:break-word;overflow-wrap:break-word;" height="30">
-            ${esc(v.title)}
+          <td valign="top" data-field="title" style="font-size:11px;font-weight:700;color:${v.textColor};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.3;${hasCustomRows ? '' : 'height:30px;'}word-break:break-word;overflow-wrap:break-word;"${hasCustomRows ? '' : ' height="30"'}>
+            ${esc(v.title).replace(/\|/g, '<br>')}
           </td>
         </tr>
+        ${subtitleRow}
+        ${addressRow}
         <tr>
           <td valign="bottom" style="padding:2px 0 0 0;">
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -994,8 +1130,8 @@
         </tr>
       </table>
     </td>
-  </tr>${bannerHtml}
-</table>`;
+  </tr>${taglineRow}${bannerHtml}
+</table>${msoClose}`;
     }
 
     // ── Update Preview ──
@@ -1013,16 +1149,20 @@
       navigator.clipboard.writeText(html).then(() => showToast('HTML code copied!'));
     }
 
-    async function copyRichText() {
+    async function copyRichText(mode) {
       const v = getValues();
-      const html = buildSignatureHTML(v);
-      const btn = document.querySelector('.btn-red');
+      const html = buildSignatureHTML(v, mode);
+      const isClassic = (mode === 'classic');
+      const btn = isClassic
+        ? document.querySelector('.action-btn.primary-alt')
+        : document.querySelector('.action-btn.primary');
       const originalText = btn.textContent;
 
       function flashSuccess(msg) {
         btn.classList.add('copied');
         btn.textContent = 'COPIED!';
-        showToast(msg || 'Signature copied! Paste into Outlook.');
+        const label = isClassic ? 'Classic Outlook' : 'New Outlook';
+        showToast(msg || `${label} signature copied! Paste into Outlook.`);
         setTimeout(() => { btn.classList.remove('copied'); btn.textContent = originalText; }, 2000);
       }
 
@@ -1145,16 +1285,16 @@
 
     // ── Employee Directory ──
     const employees = [
-      { name: "Matt Samler", title: "Managing Partner & Executive Managing Director", email: "MTSamler@VistaSiteSelection.com", phone: "214.583.6899", linkedin: "https://www.linkedin.com/in/matthewsamler" },
+      { name: "Matt Samler", title: "Managing Partner &|Executive Managing Director", email: "MTSamler@VistaSiteSelection.com", phone: "214.583.6899", linkedin: "https://www.linkedin.com/in/matthewsamler" },
       { name: "Chris Magill", title: "Partner & Senior Managing Director", email: "cjmagill@vistasiteselection.com", phone: "614.464.6295", linkedin: "https://www.linkedin.com/in/chrismagill" },
       { name: "Evan Stair", title: "Partner & Senior Managing Director", email: "elstair@vistasiteselection.com", phone: "972.603.5947", linkedin: "https://www.linkedin.com/in/elsdata/" },
-      { name: "Jeff Troan", title: "Partner & Senior Managing Director", email: "gjtroan@vistasiteselection.com", phone: "202.747.5644", linkedin: "https://www.linkedin.com/in/geoffrey-troan-637b60a/" },
+      { name: "Jeff Troan", title: "Sr Managing Dir / Partner / Founder", email: "gjtroan@vistasiteselection.com", phone: "407.413.6799", linkedin: "https://www.linkedin.com/in/geoffrey-troan-637b60a/", customName: "Geoffrey (Jeff) J. Troan", subtitle: "USA and European Union Citizenship", address: "52 East Gay Street\nColumbus, OH 43215", tagline: '“Test the strength of your laborshed.”|Free THE SYSTEM access below…', isCustom: true },
       { name: "James Maples, PhD", title: "Lead Economist", email: "jnmaples@vistasiteselection.com", phone: "865.254.6395", linkedin: "https://www.linkedin.com/in/james-maples/" },
-      { name: "Julie Miller", title: "Managing Director & Head of Incentives Compliance", email: "jmmiller@vistasiteselection.com", phone: "972.352.1940", linkedin: "https://www.linkedin.com/in/julie-miller-ccip/" },
+      { name: "Julie Miller", title: "Managing Director &|Head of Incentives Compliance", email: "jmmiller@vistasiteselection.com", phone: "972.352.1940", linkedin: "https://www.linkedin.com/in/julie-miller-ccip/" },
       { name: "Andrea Dishler", title: "Senior Vice President, Project Management", email: "adishler@vistasiteselection.com", phone: "202.448.1492", linkedin: "https://www.linkedin.com/in/andrea-dishler/" },
       { name: "Janie Hanna", title: "Vice President of Program Management", email: "jhanna@vistasiteselection.com", phone: "440.387.7506", linkedin: "https://www.linkedin.com/in/janie-hanna/" },
       { name: "Taylor Blanks", title: "Program Support Manager", email: "tblanks@vistasiteselection.com", phone: "202.747.5640", linkedin: "https://www.linkedin.com/in/yourfavoriteea-taylorblanks/" },
-      { name: "William Floyd", title: "Senior Vice President, Strategy & Communications", email: "whfloyd@vistasiteselection.com", phone: "972.415.9197", linkedin: "https://www.linkedin.com/in/whfiv/" },
+      { name: "William Floyd", title: "Senior Vice President,|Strategy & Communications", email: "whfloyd@vistasiteselection.com", phone: "972.415.9197", linkedin: "https://www.linkedin.com/in/whfiv/" },
       { name: "Mac Smith", title: "Data Scientist", email: "tmsmith@vistasiteselection.com", phone: "614.905.6397", linkedin: "https://www.linkedin.com/in/theodoremsmith/" }
     ];
 
@@ -1178,13 +1318,29 @@
 
     function selectEmployee(index) {
       const emp = employees[index];
-      $('fullName').value = emp.name.toUpperCase();
+      $('fullName').value = (emp.customName || emp.name).toUpperCase();
       $('title').value = emp.title;
       $('phone').value = emp.phone;
       $('email').value = emp.email;
-      $('linkedin').value = emp.linkedin;
-      const liDisplay = emp.linkedin.replace(/^https?:\/\/(www\.)?/, '');
-      $('linkedinDisplay').value = liDisplay.endsWith('/') ? liDisplay : liDisplay + '/';
+      $('linkedin').value = emp.linkedin || '';
+      const liUrl = emp.linkedin || '';
+      const liDisplay = liUrl.replace(/^https?:\/\/(www\.)?/, '');
+      $('linkedinDisplay').value = liDisplay.endsWith('/') ? liDisplay : (liDisplay ? liDisplay + '/' : '');
+
+      // Custom fields
+      if (emp.isCustom) {
+        $('customFields').style.display = '';
+        $('subtitle').value = emp.subtitle || '';
+        $('addressLine1').value = (emp.address || '').split('\n')[0] || '';
+        $('addressLine2').value = (emp.address || '').split('\n')[1] || '';
+        $('tagline').value = emp.tagline || '';
+      } else {
+        $('customFields').style.display = 'none';
+        $('subtitle').value = '';
+        $('addressLine1').value = '';
+        $('addressLine2').value = '';
+        $('tagline').value = '';
+      }
 
       // Highlight active card
       document.querySelectorAll('.emp-card').forEach(c => c.classList.remove('active'));
@@ -1329,6 +1485,56 @@
     buildEmployeeGrid();
     updatePreview();
     updateMetaHints();
+  </script>
+
+  <!-- ════════════ BACKGROUND EFFECTS ════════════ -->
+  <!-- Grain texture overlay -->
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.15;mix-blend-mode:multiply;">
+    <svg width="100%" height="100%"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#grain)"/></svg>
+  </div>
+  <!-- Interactive dot grid -->
+  <canvas id="bgGrid" style="position:fixed;inset:0;pointer-events:none;z-index:0;"></canvas>
+  <script>
+  (function(){
+    const c = document.getElementById('bgGrid');
+    const ctx = c.getContext('2d');
+    let w, h, mx = -1, my = -1;
+    const GAP = 28, R = 1.2, HOVER_R = 80;
+
+    function resize() {
+      w = c.width = window.innerWidth;
+      h = c.height = window.innerHeight;
+      draw();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (let x = GAP; x < w; x += GAP) {
+        for (let y = GAP; y < h; y += GAP) {
+          const dx = x - mx, dy = y - my;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const inRange = dist < HOVER_R;
+          const scale = inRange ? 1 + 1.8 * (1 - dist / HOVER_R) : 1;
+          const alpha = inRange ? 0.18 + 0.22 * (1 - dist / HOVER_R) : 0.10;
+          ctx.beginPath();
+          ctx.arc(x, y, R * scale, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(20,25,28,${alpha})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', function(e) {
+      mx = e.clientX; my = e.clientY;
+      requestAnimationFrame(draw);
+    });
+    document.addEventListener('mouseleave', function() {
+      mx = my = -1;
+      requestAnimationFrame(draw);
+    });
+    resize();
+  })();
   </script>
 </body>
 </html>
