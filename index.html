@@ -303,40 +303,28 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      padding: 14px 20px;
+      padding: 12px 18px;
       border: 1.5px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 999px;
       background: white;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 500;
       color: var(--ink);
       cursor: pointer;
       transition: all var(--t);
-      letter-spacing: .02em;
-      position: relative;
-      overflow: hidden;
+      letter-spacing: .08em;
+      text-transform: uppercase;
       box-shadow: var(--shadow-sm);
     }
-    .action-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--vista-red);
-      transform: translateX(-101%);
-      transition: transform 420ms cubic-bezier(.65,0,.35,1);
-      z-index: 0;
-    }
-    .action-btn:hover::before { transform: translateX(0); }
     .action-btn:hover {
+      background: var(--vista-red);
       color: white;
       border-color: var(--vista-red);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(178,44,46,.18);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(178,44,46,.20);
     }
-    .action-btn:hover .action-info { color: rgba(255,255,255,.6); }
-    .action-btn .action-label,
-    .action-btn .action-info { position: relative; z-index: 1; }
+    .action-btn:hover .action-info { color: rgba(255,255,255,.5); }
     .action-btn .action-info {
       font-size: 16px;
       color: var(--line);
@@ -349,30 +337,32 @@
       background: var(--vista-black);
       color: white;
       border-color: var(--vista-black);
-      box-shadow: 0 10px 30px rgba(20,25,28,.18);
+    }
+    .action-btn.primary:hover {
+      background: var(--vista-red);
+      border-color: var(--vista-red);
     }
     .action-btn.primary .action-info { color: rgba(255,255,255,.35); }
-    .action-btn.primary:hover .action-info { color: rgba(255,255,255,.6); }
 
     /* Primary Alt (Classic Outlook) */
     .action-btn.primary-alt {
       background: var(--vista-black);
       color: white;
       border-color: var(--vista-black);
-      box-shadow: 0 10px 30px rgba(20,25,28,.18);
     }
-    .action-btn.primary-alt::before { background: var(--vista-red-dark); }
+    .action-btn.primary-alt:hover {
+      background: var(--vista-red);
+      border-color: var(--vista-red);
+    }
     .action-btn.primary-alt .action-info { color: rgba(255,255,255,.35); }
-    .action-btn.primary-alt:hover .action-info { color: rgba(255,255,255,.6); }
 
     /* Copied state */
     .action-btn.copied {
       background: #166534 !important;
       border-color: #166534 !important;
       color: white !important;
-      box-shadow: 0 10px 30px rgba(22,101,52,.25) !important;
+      box-shadow: 0 8px 22px rgba(22,101,52,.25) !important;
     }
-    .action-btn.copied::before { transform: translateX(-101%) !important; }
 
     /* ── Employee Cards ── */
     .emp-grid {
