@@ -364,6 +364,29 @@
       box-shadow: 0 8px 22px rgba(22,101,52,.25) !important;
     }
 
+    /* ── Animated Glow Wrap (Vista Red → Gold → Blue border flow) ── */
+    .glow-wrap {
+      position: relative;
+      border-radius: 999px;
+      padding: 3px;
+      background: linear-gradient(90deg, var(--vista-red), #ebaa1f, #b5d9ee, #ebaa1f, var(--vista-red));
+      background-size: 300% 100%;
+      animation: borderFlow 5s linear infinite, borderGlow 5s linear infinite;
+    }
+    .glow-wrap .action-btn {
+      border: none;
+      box-shadow: none;
+      width: 100%;
+      justify-content: center;
+    }
+    @keyframes borderFlow { to { background-position: -300% 0; } }
+    @keyframes borderGlow {
+      0%, 100% { box-shadow: 0 5px 20px rgba(178,44,46,.30); }
+      33% { box-shadow: 0 5px 20px rgba(235,170,31,.32); }
+      66% { box-shadow: 0 5px 20px rgba(181,217,238,.5); }
+    }
+    @media (prefers-reduced-motion: reduce) { .glow-wrap { animation: none; } }
+
     /* ── Employee Cards ── */
     .emp-grid {
       display: grid;
@@ -913,14 +936,18 @@
         </div>
         <div class="preview-box" id="previewBox"></div>
         <div class="action-stack">
-          <button class="action-btn primary" onclick="copyRichText()" title="For New Outlook (Windows 11), Outlook Web, and Gmail. Modern CSS with rounded icon circles.">
-            <span class="action-label">Copy for New Outlook</span>
-            <span class="action-info">&#9432;</span>
-          </button>
-          <button class="action-btn primary-alt" onclick="copyRichText('classic')" title="For Classic Outlook (2016/2019/2021). Square icons, forced spacing, Word-engine optimized.">
-            <span class="action-label">Copy for Classic Outlook</span>
-            <span class="action-info">&#9432;</span>
-          </button>
+          <div class="glow-wrap">
+            <button class="action-btn primary" onclick="copyRichText()" title="For New Outlook (Windows 11), Outlook Web, and Gmail. Modern CSS with rounded icon circles.">
+              <span class="action-label">Copy for New Outlook</span>
+              <span class="action-info">&#9432;</span>
+            </button>
+          </div>
+          <div class="glow-wrap">
+            <button class="action-btn primary-alt" onclick="copyRichText('classic')" title="For Classic Outlook (2016/2019/2021). Square icons, forced spacing, Word-engine optimized.">
+              <span class="action-label">Copy for Classic Outlook</span>
+              <span class="action-info">&#9432;</span>
+            </button>
+          </div>
           <button class="action-btn" onclick="openMobileCopy()" title="Opens a clean page optimized for copying signatures on phones. Select all, then copy.">
             <span class="action-label">Mobile Copy</span>
             <span class="action-info">&#9432;</span>
