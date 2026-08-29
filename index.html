@@ -107,8 +107,16 @@
       box-shadow: 0 8px 22px rgba(178,44,46,.20);
     }
 
+    /* ── Background Layers ── */
+    .bg-grid { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; display: block; }
+    .bg-grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .18; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.10  0 0 0 0 0.11  0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+    .header, .app { position: relative; z-index: 2; }
+
     /* ── App Layout ── */
-    .app { display: flex; height: calc(100vh - 65px); position: relative; z-index: 1; }
+    .app { display: flex; height: calc(100vh - 65px); }
 
     /* ── Left Column ── */
     .col-left {
@@ -888,7 +896,7 @@
           <span class="wf-stamp-mark" aria-hidden="true"></span>
         </a>
         <div class="wf-popup" id="wfPopup" role="tooltip" aria-hidden="true">
-          <img src="https://i.imgur.com/VMsk8Iw.png" alt="WF" class="wf-popup-img"
+          <img src="emotional%20man%203.gif" alt="WF" class="wf-popup-img"
                onerror="this.style.display='none'">
           <div class="wf-popup-text"><em>WF</em> — Mark of Approval</div>
         </div>
@@ -1648,52 +1656,155 @@
   </script>
 
   <!-- ════════════ BACKGROUND EFFECTS ════════════ -->
-  <!-- Grain texture overlay -->
-  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.15;mix-blend-mode:multiply;">
-    <svg width="100%" height="100%"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#grain)"/></svg>
-  </div>
-  <!-- Interactive dot grid -->
-  <canvas id="bgGrid" style="position:fixed;inset:0;pointer-events:none;z-index:0;"></canvas>
+  <canvas id="bgGrid" class="bg-grid" aria-hidden="true"></canvas>
+  <div class="bg-grain" aria-hidden="true"></div>
   <script>
-  (function(){
-    const c = document.getElementById('bgGrid');
-    const ctx = c.getContext('2d');
-    let w, h, mx = -1, my = -1;
-    const GAP = 28, R = 1.2, HOVER_R = 80;
+  // ── Interactive Grid Background (matches Card HQ / Compression Tool) ──
+  (() => {
+    const canvas = document.getElementById('bgGrid');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+
+    const LINE_COLOR = 'rgba(140, 146, 154, 0.55)';
+    const LINE_WIDTH = 1.0;
+    const SPACING = 42;
+    const MARGIN_CELLS = 6;
+    const DRIFT_ANGLE_DEG = 63;
+    const DRIFT_SPEED = 0.18;
+    const DRIFT_VX = Math.cos(DRIFT_ANGLE_DEG * Math.PI / 180) * DRIFT_SPEED;
+    const DRIFT_VY = Math.sin(DRIFT_ANGLE_DEG * Math.PI / 180) * DRIFT_SPEED;
+    const HOVER_RADIUS = 240;
+    const HOVER_PULL = 0.35;
+    const BH_RADIUS = 420;
+    const BH_PULL_MAX = 0.55;
+    const BH_RAMP_RATE = 0.18;
+    const BH_FADE_RATE = 0.07;
+    const EASE = 0.30;
+
+    let dpr = 1, W = 0, H = 0;
+    let cols = 0, rows = 0;
+    let points = [];
+    let startCol, startRow;
+    let xRange = 0, yRange = 0;
+    let leftEdge = 0, topEdge = 0;
+    let wrapRightAt = 0, wrapBottomAt = 0;
+    const mouse = { x: -9999, y: -9999, inside: false };
+    let pointerDown = false;
+    let bhX = 0, bhY = 0, bhStrength = 0;
 
     function resize() {
-      w = c.width = window.innerWidth;
-      h = c.height = window.innerHeight;
-      draw();
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      for (let x = GAP; x < w; x += GAP) {
-        for (let y = GAP; y < h; y += GAP) {
-          const dx = x - mx, dy = y - my;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const inRange = dist < HOVER_R;
-          const scale = inRange ? 1 + 1.8 * (1 - dist / HOVER_R) : 1;
-          const alpha = inRange ? 0.18 + 0.22 * (1 - dist / HOVER_R) : 0.10;
-          ctx.beginPath();
-          ctx.arc(x, y, R * scale, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(20,25,28,${alpha})`;
-          ctx.fill();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.ceil(W / SPACING) + 2 * MARGIN_CELLS;
+      rows = Math.ceil(H / SPACING) + 2 * MARGIN_CELLS;
+      xRange = cols * SPACING;
+      yRange = rows * SPACING;
+      leftEdge = -MARGIN_CELLS * SPACING;
+      topEdge = -MARGIN_CELLS * SPACING;
+      wrapRightAt = leftEdge + xRange;
+      wrapBottomAt = topEdge + yRange;
+      points = new Array(cols * rows);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const ox = leftEdge + c * SPACING;
+          const oy = topEdge + r * SPACING;
+          points[r * cols + c] = { ox: ox, oy: oy, x: ox, y: oy };
         }
       }
+      startCol = new Int32Array(rows);
+      startRow = new Int32Array(cols);
     }
 
+    window.addEventListener('mousemove', function(e) {
+      mouse.x = e.clientX; mouse.y = e.clientY; mouse.inside = true;
+      if (pointerDown) { bhX = e.clientX; bhY = e.clientY; }
+    }, { passive: true });
+    document.addEventListener('mouseleave', function() { mouse.inside = false; });
+    window.addEventListener('pointerdown', function(e) { bhX = e.clientX; bhY = e.clientY; pointerDown = true; }, { passive: true });
+    window.addEventListener('pointerup', function() { pointerDown = false; }, { passive: true });
+    window.addEventListener('pointercancel', function() { pointerDown = false; }, { passive: true });
+    window.addEventListener('blur', function() { pointerDown = false; });
     window.addEventListener('resize', resize);
-    document.addEventListener('mousemove', function(e) {
-      mx = e.clientX; my = e.clientY;
-      requestAnimationFrame(draw);
-    });
-    document.addEventListener('mouseleave', function() {
-      mx = my = -1;
-      requestAnimationFrame(draw);
-    });
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function tick() {
+      for (let r = 0; r < rows; r++) {
+        const base = r * cols;
+        for (let c = 0; c < cols; c++) {
+          const p = points[base + c];
+          p.ox += DRIFT_VX; p.oy += DRIFT_VY;
+          if (p.ox > wrapRightAt) { p.ox -= xRange; p.x -= xRange; startCol[r] = c; }
+          if (p.oy > wrapBottomAt) { p.oy -= yRange; p.y -= yRange; startRow[c] = r; }
+        }
+      }
+      if (!pointerDown && bhStrength > 0.001) { bhX += DRIFT_VX; bhY += DRIFT_VY; }
+      var targetStrength = pointerDown ? 1 : 0;
+      var rate = pointerDown ? BH_RAMP_RATE : BH_FADE_RATE;
+      bhStrength += (targetStrength - bhStrength) * rate;
+      if (!pointerDown && bhStrength < 0.003) bhStrength = 0;
+
+      var hoverActive = mouse.inside;
+      var mx = mouse.x, my = mouse.y;
+      var hoverR2 = HOVER_RADIUS * HOVER_RADIUS;
+      var bhR2 = BH_RADIUS * BH_RADIUS;
+
+      for (var i = 0; i < points.length; i++) {
+        var p = points[i];
+        var tx = p.ox, ty = p.oy;
+        if (!reduced && hoverActive) {
+          var dx = mx - p.ox, dy = my - p.oy;
+          var d2 = dx * dx + dy * dy;
+          if (d2 < hoverR2) {
+            var d = Math.sqrt(d2);
+            var fall = 1 - d / HOVER_RADIUS;
+            var t = fall * fall * HOVER_PULL;
+            tx = p.ox + dx * t; ty = p.oy + dy * t;
+          }
+        }
+        if (!reduced && bhStrength > 0.001) {
+          var dx2 = bhX - p.ox, dy2 = bhY - p.oy;
+          var d22 = dx2 * dx2 + dy2 * dy2;
+          if (d22 < bhR2) {
+            var dd = Math.sqrt(d22);
+            var fall2 = 1 - dd / BH_RADIUS;
+            var t2 = Math.sqrt(fall2) * bhStrength * BH_PULL_MAX;
+            tx = tx + (bhX - tx) * t2; ty = ty + (bhY - ty) * t2;
+          }
+        }
+        p.x += (tx - p.x) * EASE; p.y += (ty - p.y) * EASE;
+      }
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.lineWidth = LINE_WIDTH;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = LINE_COLOR;
+      var path = new Path2D();
+      for (var r = 0; r < rows; r++) {
+        var sc = startCol[r];
+        var base = r * cols;
+        var first = points[base + sc];
+        path.moveTo(first.x, first.y);
+        for (var ii = 1; ii < cols; ii++) { var cc = (sc + ii) % cols; var pp = points[base + cc]; path.lineTo(pp.x, pp.y); }
+      }
+      for (var c = 0; c < cols; c++) {
+        var sr = startRow[c];
+        var first2 = points[sr * cols + c];
+        path.moveTo(first2.x, first2.y);
+        for (var jj = 1; jj < rows; jj++) { var rr = (sr + jj) % rows; var pp2 = points[rr * cols + c]; path.lineTo(pp2.x, pp2.y); }
+      }
+      ctx.stroke(path);
+      requestAnimationFrame(tick);
+    }
+
     resize();
+    requestAnimationFrame(tick);
   })();
   </script>
 </body>
