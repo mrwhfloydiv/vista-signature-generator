@@ -910,6 +910,20 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // ── UTM Tracking ──
+    // Schema: utm_source=email | utm_medium=signature | utm_campaign={employee-slug} | utm_content={link-type}
+    // Queryable in GA4: source/medium = "email / signature", campaign = employee name, content = link element
+    // Link types: logo, website, linkedin, banner
+    function slugify(name) {
+      return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    function addUtm(url, campaign, content) {
+      if (!url) return url;
+      const sep = url.includes('?') ? '&' : '?';
+      return url + sep + 'utm_source=email&utm_medium=signature&utm_campaign=' + encodeURIComponent(campaign) + '&utm_content=' + encodeURIComponent(content);
+    }
+
     // ── Section Accordion ──
     function toggleSection(bodyId, headerEl) {
       const body = $(bodyId);
@@ -1044,6 +1058,9 @@
       currentIconColor = v.iconColor || '#14191c';
       currentIconRadius = classic ? '0' : '9px';
 
+      // UTM campaign slug derived from employee name (e.g. "william-floyd")
+      const utmCampaign = slugify(v.name);
+
       // Logo: 584×1138 natural → 80px wide = 156px tall
       const logoImg = v.logoUrl
         ? `<img src="${esc(v.logoUrl)}" width="80" height="156" style="display:block;border:0;width:80px;height:156px;" alt="Vista Site Selection">`
@@ -1055,7 +1072,7 @@
         ? `
   <tr>
     <td colspan="5" data-field="banner" style="padding-top:12px;">
-      <a href="${esc(v.bannerLink)}" target="_blank" style="text-decoration:none;">
+      <a href="${esc(addUtm(v.bannerLink, utmCampaign, 'banner'))}" target="_blank" style="text-decoration:none;">
         <img src="${esc(v.bannerUrl)}" width="${v.sigWidth}" height="${bannerH}" style="display:block;border:0;width:${v.sigWidth}px;height:${bannerH}px;max-width:100%;" alt="The System - Click for Access">
       </a>
     </td>
@@ -1063,7 +1080,7 @@
         : '';
 
       const linkedinRow = v.linkedin
-        ? iconRow('linkedin', v.linkedinDisplay, v.linkedin, v.linkedinDisplay, { last: true, field: 'linkedin' })
+        ? iconRow('linkedin', v.linkedinDisplay, addUtm(v.linkedin, utmCampaign, 'linkedin'), v.linkedinDisplay, { last: true, field: 'linkedin' })
         : '';
 
       const websiteLast = !v.linkedin;
@@ -1097,7 +1114,7 @@
       return `${msoOpen}<table cellpadding="0" cellspacing="0" border="0" data-field="wrapper" style="max-width:${v.sigWidth}px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;" width="${v.sigWidth}">
   <tr>
     <td valign="top" data-field="logo" style="width:80px;padding:0;background:#ffffff;">
-      <a href="https://${esc(v.websiteUrl)}" target="_blank" style="text-decoration:none;border:0;display:block;">
+      <a href="${esc(addUtm('https://' + v.websiteUrl, utmCampaign, 'logo'))}" target="_blank" style="text-decoration:none;border:0;display:block;">
         ${logoImg}
       </a>
     </td>
@@ -1123,7 +1140,7 @@
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
               ${iconRow('phone', v.phone, 'tel:+1' + v.phone.replace(/\./g, ''), v.phone, { field: 'phone' })}
               ${iconRow('email', v.email, 'mailto:' + v.email, v.email, { field: 'email' })}
-              ${iconRow('web', v.websiteUrl, 'https://' + v.websiteUrl, v.websiteUrl, { last: websiteLast, field: 'website' })}
+              ${iconRow('web', v.websiteUrl, addUtm('https://' + v.websiteUrl, utmCampaign, 'website'), v.websiteUrl, { last: websiteLast, field: 'website' })}
               ${linkedinRow}
             </table>
           </td>
