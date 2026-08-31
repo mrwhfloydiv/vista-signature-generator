@@ -625,7 +625,7 @@
     .preview-box.dark-mode td[width="18"][height="18"] { background-color: #e0e0e0 !important; color: #1a1a1a !important; }
     .preview-box.dark-mode td[width="18"][height="18"] span,
     .preview-box.dark-mode td[width="18"][height="18"] a { color: #1a1a1a !important; }
-    .preview-box.dark-mode td[data-field="logo"] { background: #ffffff !important; }
+    .preview-box.dark-mode td[data-field="logo"] { background: transparent !important; }
 
     /* ── Image Preview Thumbnail ── */
     .img-thumb-row { margin-top: 6px; display: flex; align-items: center; gap: 8px; }
@@ -1240,8 +1240,8 @@
 
       return `${msoOpen}<table cellpadding="0" cellspacing="0" border="0" data-field="wrapper" style="max-width:${v.sigWidth}px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;" width="${v.sigWidth}">
   <tr>
-    <td valign="top" data-field="logo" style="width:80px;padding:0;" bgcolor="#ffffff">
-      <a href="${esc(addUtm('https://' + v.websiteUrl, utmCampaign, 'logo'))}" target="_blank" style="text-decoration:none;border:0;display:block;">
+    <td valign="top" data-field="logo" style="width:80px;padding:0;">
+      <a href="${esc(addUtm('https://' + v.websiteUrl, utmCampaign, 'logo'))}" target="_blank" style="text-decoration:none;border:0;">
         ${logoImg}
       </a>
     </td>
@@ -1249,7 +1249,7 @@
     <td width="2" bgcolor="${v.barColor}" style="background-color:${v.barColor};font-size:1px;line-height:1px;width:2px;min-width:2px;${msoLH}">&nbsp;</td>
     <td width="10" style="width:10px;min-width:10px;font-size:1px;line-height:1px;${msoLH}">&nbsp;</td>
     <td valign="top" width="100%" style="padding:0;width:100%;">
-      <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%" style="height:100%;width:100%;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%">
         <tr>
           <td valign="top" data-field="name" style="padding:4px 0 0 0;font-size:18px;font-weight:800;color:${v.nameColor};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.2;word-break:break-word;overflow-wrap:break-word;">
             ${esc(v.name)}
