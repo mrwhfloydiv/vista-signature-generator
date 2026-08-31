@@ -1191,8 +1191,9 @@
       const utmCampaign = slugify(v.name);
 
       // Logo: 584×1138 natural → 80px wide = 156px tall
+      // mso-width/height-source:userset forces Outlook Word engine to respect our dimensions
       const logoImg = v.logoUrl
-        ? `<img src="${esc(v.logoUrl)}" width="80" height="156" style="display:block;border:0;width:80px;height:156px;" alt="Vista Site Selection">`
+        ? `<img src="${esc(v.logoUrl)}" width="80" height="156" style="display:block;border:0;width:80px;height:156px;mso-width-source:userset;mso-height-source:userset;" alt="Vista Site Selection">`
         : `<span style="color:#ffffff;font-size:48px;font-weight:bold;font-family:Arial,sans-serif;">V</span>`;
 
       // Banner: 1138×148 natural → scaled to sigWidth
@@ -1202,7 +1203,7 @@
   <tr>
     <td colspan="5" data-field="banner" style="padding-top:12px;">
       <a href="${esc(addUtm(v.bannerLink, utmCampaign, 'banner'))}" target="_blank" style="text-decoration:none;">
-        <img src="${esc(v.bannerUrl)}" width="${v.sigWidth}" height="${bannerH}" style="display:block;border:0;width:${v.sigWidth}px;height:${bannerH}px;max-width:100%;" alt="The System - Click for Access">
+        <img src="${esc(v.bannerUrl)}" width="${v.sigWidth}" height="${bannerH}" style="display:block;border:0;width:${v.sigWidth}px;height:${bannerH}px;mso-width-source:userset;mso-height-source:userset;" alt="The System - Click for Access">
       </a>
     </td>
   </tr>`
@@ -1229,20 +1230,17 @@
         ? `<tr><td colspan="5" style="padding:10px 0 0 0;font-size:11px;font-style:italic;color:${v.nameColor || '#b22c2e'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.5;word-break:break-word;overflow-wrap:break-word;">${esc(v.tagline).replace(/\|/g, '<br>')}</td></tr>`
         : '';
 
-      // MSO conditional wrapper (Classic Outlook / Word engine)
-      const msoOpen = classic
-        ? `<!--[if mso]><table cellpadding="0" cellspacing="0" border="0" width="${v.sigWidth}"><tr><td><![endif]-->\n`
-        : '';
-      const msoClose = classic
-        ? `\n<!--[if mso]></td></tr></table><![endif]-->`
-        : '';
+      // MSO conditional wrapper — ALWAYS included because recipients may be on any Outlook version.
+      // Classic Outlook (Word engine) reads these; modern clients ignore them.
+      const msoOpen = `<!--[if mso]><table cellpadding="0" cellspacing="0" border="0" width="${v.sigWidth}"><tr><td><![endif]-->\n`;
+      const msoClose = `\n<!--[if mso]></td></tr></table><![endif]-->`;
 
-      // Spacer cells — add mso-line-height-rule for Classic
-      const msoLH = classic ? 'mso-line-height-rule:exactly;' : '';
+      // mso-line-height-rule — ALWAYS included to prevent spacer cell collapse in Word
+      const msoLH = 'mso-line-height-rule:exactly;';
 
       return `${msoOpen}<table cellpadding="0" cellspacing="0" border="0" data-field="wrapper" style="max-width:${v.sigWidth}px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;" width="${v.sigWidth}">
   <tr>
-    <td valign="top" data-field="logo" style="width:80px;padding:0;background:#ffffff;">
+    <td valign="top" data-field="logo" style="width:80px;padding:0;" bgcolor="#ffffff">
       <a href="${esc(addUtm('https://' + v.websiteUrl, utmCampaign, 'logo'))}" target="_blank" style="text-decoration:none;border:0;display:block;">
         ${logoImg}
       </a>
