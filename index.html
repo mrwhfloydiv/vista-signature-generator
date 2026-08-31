@@ -843,12 +843,12 @@
           <div class="form-group" data-highlights="logo">
             <label>Left Logo Image</label>
             <div class="file-input-row">
-              <input type="text" id="logoUrl" value="https://i.imgur.com/03IUPTd.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
+              <input type="text" id="logoUrl" value="https://i.imgur.com/SRlFjZD.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
               <button class="btn-browse" onclick="browseFile('logoUrl')">Browse</button>
             </div>
             <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'logoUrl')">
             <div class="img-thumb-row" id="logoThumbRow">
-              <img class="img-thumb" id="logoThumb" src="https://i.imgur.com/03IUPTd.gif" alt="Logo preview">
+              <img class="img-thumb" id="logoThumb" src="https://i.imgur.com/SRlFjZD.gif" alt="Logo preview">
               <span class="img-thumb-label">Logo preview</span>
             </div>
             <div class="meta-hint" id="metaLogo"><span class="meta-label">DISPLAY:</span> left column image (80px wide)<br><span class="meta-label">ACTION:</span> links to website<br><span class="meta-label">RECOMMENDED:</span> 584 x 1138px (1:2 ratio, tall rectangle)</div>
@@ -856,12 +856,12 @@
           <div class="form-group" data-highlights="banner">
             <label>Banner Image</label>
             <div class="file-input-row">
-              <input type="text" id="bannerUrl" value="https://i.imgur.com/KA2C4Nf.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
+              <input type="text" id="bannerUrl" value="https://i.imgur.com/NJCi1mt.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
               <button class="btn-browse" onclick="browseFile('bannerUrl')">Browse</button>
             </div>
             <input type="file" id="bannerFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'bannerUrl')">
             <div class="img-thumb-row" id="bannerThumbRow">
-              <img class="img-thumb" id="bannerThumb" src="https://i.imgur.com/KA2C4Nf.gif" alt="Banner preview">
+              <img class="img-thumb" id="bannerThumb" src="https://i.imgur.com/NJCi1mt.gif" alt="Banner preview">
               <span class="img-thumb-label">Banner preview</span>
             </div>
             <label style="margin-top:12px;">Banner Link URL</label>
@@ -1190,14 +1190,16 @@
       // UTM campaign slug derived from employee name (e.g. "william-floyd")
       const utmCampaign = slugify(v.name);
 
-      // Logo: 584×1138 natural → 80px wide = 156px tall
+      // Logo dimensions — standard: 160×312 source → 80×156 display, Jeff: 160×376 source → 80×188 display
       // mso-width/height-source:userset forces Outlook Word engine to respect our dimensions
+      const isJeff = v.logoUrl && v.logoUrl.includes('DDb3J7e');
+      const logoH = isJeff ? 188 : 156;
       const logoImg = v.logoUrl
-        ? `<img src="${esc(v.logoUrl)}" width="80" height="156" style="display:block;border:0;width:80px;height:156px;mso-width-source:userset;mso-height-source:userset;" alt="Vista Site Selection">`
+        ? `<img src="${esc(v.logoUrl)}" width="80" height="${logoH}" style="display:block;border:0;width:80px;height:${logoH}px;mso-width-source:userset;mso-height-source:userset;" alt="Vista Site Selection">`
         : `<span style="color:#ffffff;font-size:48px;font-weight:bold;font-family:Arial,sans-serif;">V</span>`;
 
-      // Banner: 1138×148 natural → scaled to sigWidth
-      const bannerH = Math.round(v.sigWidth * 148 / 1138);
+      // Banner: 760×98 natural (2× retina) → displayed at sigWidth
+      const bannerH = Math.round(v.sigWidth * 98 / 760);
       const bannerHtml = v.bannerUrl
         ? `
   <tr>
@@ -1471,16 +1473,18 @@
       const liDisplay = liUrl.replace(/^https?:\/\/(www\.)?/, '');
       $('linkedinDisplay').value = liDisplay.endsWith('/') ? liDisplay : (liDisplay ? liDisplay + '/' : '');
 
-      // Custom fields
+      // Custom fields + logo swap
       if (emp.isCustom) {
         $('customFields').style.display = '';
         $('subtitle').value = emp.subtitle || '';
         $('addressLine1').value = (emp.address || '').split('\n')[0] || '';
         $('addressLine2').value = (emp.address || '').split('\n')[1] || '';
         $('tagline').value = emp.tagline || '';
+        $('logoUrl').value = 'https://i.imgur.com/DDb3J7e.gif';
       } else {
         $('customFields').style.display = 'none';
         $('subtitle').value = '';
+        $('logoUrl').value = 'https://i.imgur.com/SRlFjZD.gif';
         $('addressLine1').value = '';
         $('addressLine2').value = '';
         $('tagline').value = '';
