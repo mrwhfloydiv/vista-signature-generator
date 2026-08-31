@@ -843,12 +843,12 @@
           <div class="form-group" data-highlights="logo">
             <label>Left Logo Image</label>
             <div class="file-input-row">
-              <input type="text" id="logoUrl" value="https://i.imgur.com/SRlFjZD.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
+              <input type="text" id="logoUrl" value="https://i.imgur.com/y7XzVKZ.png" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
               <button class="btn-browse" onclick="browseFile('logoUrl')">Browse</button>
             </div>
             <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'logoUrl')">
             <div class="img-thumb-row" id="logoThumbRow">
-              <img class="img-thumb" id="logoThumb" src="https://i.imgur.com/SRlFjZD.gif" alt="Logo preview">
+              <img class="img-thumb" id="logoThumb" src="https://i.imgur.com/y7XzVKZ.png" alt="Logo preview">
               <span class="img-thumb-label">Logo preview</span>
             </div>
             <div class="meta-hint" id="metaLogo"><span class="meta-label">DISPLAY:</span> left column image (80px wide)<br><span class="meta-label">ACTION:</span> links to website<br><span class="meta-label">RECOMMENDED:</span> 584 x 1138px (1:2 ratio, tall rectangle)</div>
@@ -1192,7 +1192,7 @@
 
       // Logo dimensions — standard: 160×312 source → 80×156 display, Jeff: 160×376 source → 80×188 display
       // mso-width/height-source:userset forces Outlook Word engine to respect our dimensions
-      const isJeff = v.logoUrl && v.logoUrl.includes('DDb3J7e');
+      const isJeff = v.logoUrl && v.logoUrl.includes('2GetQ1n');
       const logoH = isJeff ? 188 : 156;
       const logoImg = v.logoUrl
         ? `<img src="${esc(v.logoUrl)}" width="80" height="${logoH}" style="display:block;border:0;width:80px;height:${logoH}px;mso-width-source:userset;mso-height-source:userset;" alt="Vista Site Selection">`
@@ -1480,11 +1480,11 @@
         $('addressLine1').value = (emp.address || '').split('\n')[0] || '';
         $('addressLine2').value = (emp.address || '').split('\n')[1] || '';
         $('tagline').value = emp.tagline || '';
-        $('logoUrl').value = 'https://i.imgur.com/DDb3J7e.gif';
+        $('logoUrl').value = 'https://i.imgur.com/2GetQ1n.png';
       } else {
         $('customFields').style.display = 'none';
         $('subtitle').value = '';
-        $('logoUrl').value = 'https://i.imgur.com/SRlFjZD.gif';
+        $('logoUrl').value = 'https://i.imgur.com/y7XzVKZ.png';
         $('addressLine1').value = '';
         $('addressLine2').value = '';
         $('tagline').value = '';
