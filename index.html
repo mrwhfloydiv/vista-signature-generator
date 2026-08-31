@@ -934,22 +934,27 @@
             </div>
           </div>
         </div>
+        <!-- Outlook Version Toggle -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px;">
+          <div class="mode-toggle" style="flex:1;max-width:400px;">
+            <button class="mode-btn active" id="modeNew" onclick="setOutlookMode('new')" style="flex:1;text-align:center;">New Outlook</button>
+            <button class="mode-btn" id="modeClassic" onclick="setOutlookMode('classic')" style="flex:1;text-align:center;">Classic Outlook</button>
+          </div>
+        </div>
         <div class="preview-box" id="previewBox"></div>
         <div class="action-stack">
           <div class="glow-wrap">
-            <button class="action-btn primary" onclick="copyRichText()" title="For New Outlook (Windows 11), Outlook Web, and Gmail. Modern CSS with rounded icon circles.">
-              <span class="action-label">Copy for New Outlook</span>
-              <span class="action-info">&#9432;</span>
-            </button>
-          </div>
-          <div class="glow-wrap">
-            <button class="action-btn primary-alt" onclick="copyRichText('classic')" title="For Classic Outlook (2016/2019/2021). Square icons, forced spacing, Word-engine optimized.">
-              <span class="action-label">Copy for Classic Outlook</span>
+            <button class="action-btn primary" id="copyBtn" onclick="copyRichText(window._outlookMode || '')" title="Copies your signature to clipboard, optimized for the selected Outlook version above.">
+              <span class="action-label">Copy Signature</span>
               <span class="action-info">&#9432;</span>
             </button>
           </div>
           <button class="action-btn" onclick="openMobileCopy()" title="Opens a clean page optimized for copying signatures on phones. Select all, then copy.">
             <span class="action-label">Mobile Copy</span>
+            <span class="action-info">&#9432;</span>
+          </button>
+          <button class="action-btn" id="installBtn" style="display:none;" onclick="installClassicOutlook()" title="Downloads a Word-optimized .htm file. Copy it to %appdata%\Microsoft\Signatures\ and Classic Outlook will pick it up — no paste needed.">
+            <span class="action-label">Install to Classic Outlook</span>
             <span class="action-info">&#9432;</span>
           </button>
           <button class="action-btn" onclick="copyHTML()" title="Copies raw HTML code to clipboard. Paste into your signature editor's source/code view.">
@@ -1297,11 +1302,10 @@
 
     async function copyRichText(mode) {
       const v = getValues();
-      const html = buildSignatureHTML(v, mode);
+      let html = buildSignatureHTML(v, mode);
+      if (mode === 'classic') html = cleanForWord(html);
       const isClassic = (mode === 'classic');
-      const btn = isClassic
-        ? document.querySelector('.action-btn.primary-alt')
-        : document.querySelector('.action-btn.primary');
+      const btn = $('copyBtn');
       const originalText = btn.textContent;
 
       function flashSuccess(msg) {
@@ -1413,6 +1417,21 @@
       showToast('Mobile copy page opened — follow the steps!');
     }
 
+    // Strip CSS properties that Word/Classic Outlook doesn't support
+    function cleanForWord(html) {
+      return html
+        .replace(/word-break:[^;]+;/g, '')
+        .replace(/overflow-wrap:[^;]+;/g, '')
+        .replace(/-webkit-text-size-adjust:[^;]+;/g, '')
+        .replace(/-ms-text-size-adjust:[^;]+;/g, '')
+        .replace(/-webkit-border-radius:[^;]+;/g, '')
+        .replace(/max-width:[^;]+;/g, '')
+        .replace(/min-width:[^;]+;/g, '')
+        .replace(/border-radius:[^;]+;/g, '')
+        .replace(/ data-field="[^"]*"/g, '')
+        .replace(/ data-text="[^"]*"/g, '');
+    }
+
     function downloadHTML() {
       const v = getValues();
       const html = buildSignatureHTML(v);
@@ -1427,6 +1446,23 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       showToast('File downloaded!');
+    }
+
+    function installClassicOutlook() {
+      const v = getValues();
+      const html = cleanForWord(buildSignatureHTML(v, 'classic'));
+      const sigName = v.name.replace(/[^a-zA-Z0-9 ]/g, '').trim();
+      const doc = '<!DOCTYPE html>\n<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">\n<head>\n<meta charset="UTF-8">\n<meta name="Generator" content="Microsoft Word 15">\n<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->\n</head>\n<body style="margin:0;padding:0;">\n' + html + '\n</body>\n</html>';
+      const blob = new Blob([doc], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = sigName + '.htm';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Downloaded! Copy to %appdata%\\Microsoft\\Signatures\\');
     }
 
     // ── Employee Directory ──
@@ -1507,6 +1543,18 @@
     function toggleWireframe(btn) {
       $('previewBox').classList.toggle('show-wireframe');
       btn.classList.toggle('active');
+    }
+
+    // ── Outlook Version Toggle ──
+    window._outlookMode = '';
+    function setOutlookMode(mode) {
+      window._outlookMode = (mode === 'classic') ? 'classic' : '';
+      $('modeNew').classList.toggle('active', mode !== 'classic');
+      $('modeClassic').classList.toggle('active', mode === 'classic');
+      // Show/hide install button
+      $('installBtn').style.display = (mode === 'classic') ? '' : 'none';
+      // Update copy button label
+      $('copyBtn').querySelector('.action-label').textContent = (mode === 'classic') ? 'Copy Signature (Classic)' : 'Copy Signature';
     }
 
     function setPreviewMode(mode, btn) {
