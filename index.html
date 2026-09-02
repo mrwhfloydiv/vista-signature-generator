@@ -971,7 +971,7 @@
               <span class="action-info">&#9432;</span>
             </button>
           </div>
-          <button class="action-btn" onclick="openMobileCopy()" title="Opens a clean page optimized for copying signatures on phones. Select all, then copy.">
+          <button class="action-btn" onclick="openMobileCopy()" title="Opens a clean page optimized for copying signatures on phones. Images are embedded in the copy, so one paste brings over text, formatting, and pictures together.">
             <span class="action-label">Mobile Copy</span>
             <span class="action-info">&#9432;</span>
           </button>
@@ -1031,8 +1031,10 @@
         </li>
         <li>
           <b>Outlook Mobile (iOS / Android):</b><br>
-          Go to <code>Settings &rarr; [your account] &rarr; Signature</code>.
-          Mobile has limited HTML support &mdash; the signature will appear simplified.
+          On your phone, open this page and tap <b>"Mobile Copy"</b> &mdash; it embeds the images
+          into the copy so one paste brings everything over. Then go to
+          <code>Settings &rarr; [your account] &rarr; Signature</code> and paste.
+          (A regular copy from the desktop buttons will lose the images on mobile.)
         </li>
       </ol>
 
@@ -1315,6 +1317,45 @@
       applyHighlight();
     }
 
+    // ── Image inlining (mobile) ──
+    // Phone signature editors (Outlook Android/iOS, Gmail) strip <img> tags that point at
+    // remote URLs — they only keep images whose data is actually IN the clipboard.
+    // Fetch each hosted image once and swap its src for a base64 data URI so a single
+    // copy/paste carries text, formatting, AND images. Desktop copy paths are untouched.
+    const _imgDataCache = {};
+
+    async function imgToDataURL(url) {
+      if (_imgDataCache[url]) return _imgDataCache[url];
+      const resp = await fetch(url, { mode: 'cors' });
+      if (!resp.ok) throw new Error('fetch failed: ' + resp.status);
+      const blob = await resp.blob();
+      const dataUrl = await new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(fr.result);
+        fr.onerror = reject;
+        fr.readAsDataURL(blob);
+      });
+      _imgDataCache[url] = dataUrl;
+      return dataUrl;
+    }
+
+    async function inlineImages(html) {
+      const urls = [...new Set(
+        (html.match(/src="https?:\/\/[^"]+"/g) || []).map(m => m.slice(5, -1))
+      )];
+      for (const url of urls) {
+        try {
+          const dataUrl = await imgToDataURL(url);
+          html = html.split('src="' + url + '"').join('src="' + dataUrl + '"');
+        } catch (e) { /* leave this one remote — better than losing the whole copy */ }
+      }
+      return html;
+    }
+
+    function isMobileDevice() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
     // ── Copy Functions ──
     function copyHTML() {
       const v = getValues();
@@ -1326,6 +1367,11 @@
       const v = getValues();
       let html = buildSignatureHTML(v, mode);
       if (mode === 'classic') html = cleanForWord(html);
+      // On phones, embed image data so the paste target doesn't have to fetch anything
+      if (isMobileDevice()) {
+        showToast('Embedding images…');
+        try { html = await inlineImages(html); } catch (e) { /* remote fallback */ }
+      }
       const isClassic = (mode === 'classic');
       const btn = $('copyBtn');
       const originalText = btn.querySelector('.action-label').textContent;
@@ -1397,9 +1443,16 @@
       }
     }
 
-    function openMobileCopy() {
+    async function openMobileCopy() {
+      // Open the tab synchronously — popup blockers kill window.open after an await
+      const win = window.open('', '_blank');
+      if (win) win.document.write('<p style="font-family:Arial,sans-serif;padding:24px;">Preparing your signature &mdash; embedding images&hellip;</p>');
       const v = getValues();
-      const html = buildSignatureHTML(v);
+      let html = buildSignatureHTML(v);
+      // Embed image data BEFORE building the page — phone editors strip remote images,
+      // so the copied HTML must carry the actual pixels.
+      showToast('Embedding images for mobile — one sec…');
+      try { html = await inlineImages(html); } catch (e) { /* remote fallback */ }
       const page = `<!DOCTYPE html>
 <html>
 <head>
@@ -1428,31 +1481,52 @@
   <div class="instructions">
     COPY YOUR SIGNATURE
     <div class="steps">
-      1. Tap "Select Signature" below<br>
-      2. Tap "Copy" when the selection appears<br>
-      3. Paste into Outlook signature settings
+      Images are embedded in this copy &mdash; text, formatting, and pictures<br>
+      all paste together in one shot.<br><br>
+      1. Tap the green button below<br>
+      2. Paste into Outlook signature settings
     </div>
   </div>
   <div class="signature-area" id="sig">${html}</div>
-  <button class="select-btn" onclick="selectSig()">TAP HERE TO SELECT SIGNATURE</button>
+  <button class="select-btn" onclick="selectSig()">TAP HERE TO COPY SIGNATURE</button>
   <scr` + `ipt>
-    function selectSig() {
+    async function selectSig() {
       var sig = document.getElementById('sig');
-      var range = document.createRange();
-      range.selectNodeContents(sig);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-      try { document.execCommand('copy'); } catch(e) {}
-      document.querySelector('.select-btn').textContent = 'SIGNATURE SELECTED — NOW COPY IT';
-      document.querySelector('.select-btn').style.background = '#14191c';
+      var btn = document.querySelector('.select-btn');
+      var ok = false;
+      // Preferred: put rich HTML (with embedded images) straight on the clipboard
+      try {
+        if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+          var htmlBlob = new Blob([sig.innerHTML], { type: 'text/html' });
+          var textBlob = new Blob([sig.innerText], { type: 'text/plain' });
+          await navigator.clipboard.write([new ClipboardItem({ 'text/html': htmlBlob, 'text/plain': textBlob })]);
+          ok = true;
+        }
+      } catch (e) {}
+      // Fallback: select the rendered signature and copy the selection
+      if (!ok) {
+        var range = document.createRange();
+        range.selectNodeContents(sig);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        try { ok = document.execCommand('copy'); } catch(e) {}
+      }
+      btn.textContent = ok ? 'COPIED! NOW PASTE INTO OUTLOOK' : 'SELECTED — TAP "COPY" IN THE POPUP MENU';
+      btn.style.background = '#14191c';
     }
   </scr` + `ipt>
 </body>
 </html>`;
-      const blob = new Blob([page], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      if (win) {
+        win.document.open();
+        win.document.write(page);
+        win.document.close();
+      } else {
+        // Popup was blocked — fall back to a blob URL in this tab
+        const blob = new Blob([page], { type: 'text/html' });
+        window.location.href = URL.createObjectURL(blob);
+      }
       showToast('Mobile copy page opened — follow the steps!');
     }
 
