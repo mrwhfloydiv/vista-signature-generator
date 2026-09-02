@@ -1041,7 +1041,7 @@
       <div class="tip">
         <b>Pro Tips:</b><br>
         &bull; <b>Fonts:</b> Montserrat renders in webmail &amp; mobile. Classic Outlook desktop falls back to Arial &mdash; this is normal.<br>
-        &bull; <b>Animated GIFs:</b> The V logo and banner will animate in webmail &amp; mobile. Classic Outlook desktop shows only the first frame.<br>
+        &bull; <b>Animated GIFs:</b> The V logo and banner will animate in webmail. Classic Outlook desktop shows only the first frame. Signatures set up via <b>Mobile Copy</b> use a small static banner &mdash; Android's clipboard can't carry the full animation.<br>
         &bull; <b>"Copy Signature to Clipboard"</b> is the easiest method. If it doesn't paste cleanly, try <b>"Copy HTML"</b> and paste into your signature editor's source/code view.<br>
         &bull; Ensure images are hosted at <b>permanent public URLs</b> &mdash; if the host goes down, images break.
       </div>
@@ -1322,6 +1322,9 @@
     // remote URLs — they only keep images whose data is actually IN the clipboard.
     // Fetch each hosted image once and swap its src for a base64 data URI so a single
     // copy/paste carries text, formatting, AND images. Desktop copy paths are untouched.
+    // Android's clipboard rejects very large payloads (the paste option simply never
+    // appears), so big/animated images are rasterized to a small static first frame.
+    // The animated banner stays animated on desktop; mobile gets a lightweight snapshot.
     const _imgDataCache = {};
 
     async function imgToDataURL(url) {
@@ -1329,12 +1332,30 @@
       const resp = await fetch(url, { mode: 'cors' });
       if (!resp.ok) throw new Error('fetch failed: ' + resp.status);
       const blob = await resp.blob();
-      const dataUrl = await new Promise((resolve, reject) => {
-        const fr = new FileReader();
-        fr.onload = () => resolve(fr.result);
-        fr.onerror = reject;
-        fr.readAsDataURL(blob);
-      });
+      let dataUrl;
+      if (blob.type === 'image/gif' || blob.size > 100 * 1024) {
+        // Rasterize first frame to keep the clipboard small enough for Android to paste
+        const objUrl = URL.createObjectURL(blob);
+        const img = new Image();
+        await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; img.src = objUrl; });
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(objUrl);
+        dataUrl = canvas.toDataURL('image/png');
+        if (dataUrl.length > 250000) dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      } else {
+        dataUrl = await new Promise((resolve, reject) => {
+          const fr = new FileReader();
+          fr.onload = () => resolve(fr.result);
+          fr.onerror = reject;
+          fr.readAsDataURL(blob);
+        });
+      }
       _imgDataCache[url] = dataUrl;
       return dataUrl;
     }
@@ -1453,6 +1474,12 @@
       // so the copied HTML must carry the actual pixels.
       showToast('Embedding images for mobile — one sec…');
       try { html = await inlineImages(html); } catch (e) { /* remote fallback */ }
+      // Embedded copies of each image for the manual long-press fallback
+      const logoData = v.logoUrl ? (_imgDataCache[v.logoUrl] || v.logoUrl) : '';
+      const bannerData = v.bannerUrl ? (_imgDataCache[v.bannerUrl] || v.bannerUrl) : '';
+      const fallbackImgs =
+        (logoData ? `<div class="fb-img"><img src="${logoData}" alt="Vista logo" style="width:80px;"><div class="fb-label">Logo</div></div>` : '') +
+        (bannerData ? `<div class="fb-img"><img src="${bannerData}" alt="Banner" style="max-width:100%;"><div class="fb-label">Banner</div></div>` : '');
       const page = `<!DOCTYPE html>
 <html>
 <head>
@@ -1475,6 +1502,13 @@
     background: #28a745; color: white; border: none; font-family: 'Montserrat', Arial, sans-serif;
     font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
   }
+  .fallback {
+    margin: 24px 16px 32px; padding: 16px; background: #fff; border: 2px dashed #ddd;
+    font-size: 12px; line-height: 1.6; color: #333;
+  }
+  .fallback b { color: #b22c2e; }
+  .fb-img { margin-top: 12px; }
+  .fb-label { font-size: 11px; color: #888; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -1489,30 +1523,40 @@
   </div>
   <div class="signature-area" id="sig">${html}</div>
   <button class="select-btn" onclick="selectSig()">TAP HERE TO COPY SIGNATURE</button>
+  <div class="fallback">
+    <b>An image missing after you paste?</b><br>
+    Long-press the image below, tap <b>"Copy image"</b>, then in Outlook long-press
+    the empty image box and <b>Paste</b> to fill it in.
+    ${fallbackImgs}
+  </div>
   <scr` + `ipt>
     async function selectSig() {
       var sig = document.getElementById('sig');
       var btn = document.querySelector('.select-btn');
       var ok = false;
-      // Preferred: put rich HTML (with embedded images) straight on the clipboard
+      // Selection copy first — it produces the clipboard format Outlook's signature
+      // editor accepts most reliably on Android
       try {
-        if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
-          var htmlBlob = new Blob([sig.innerHTML], { type: 'text/html' });
-          var textBlob = new Blob([sig.innerText], { type: 'text/plain' });
-          await navigator.clipboard.write([new ClipboardItem({ 'text/html': htmlBlob, 'text/plain': textBlob })]);
-          ok = true;
-        }
-      } catch (e) {}
-      // Fallback: select the rendered signature and copy the selection
-      if (!ok) {
         var range = document.createRange();
         range.selectNodeContents(sig);
         var sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(range);
-        try { ok = document.execCommand('copy'); } catch(e) {}
+        ok = document.execCommand('copy');
+        sel.removeAllRanges();
+      } catch(e) {}
+      // Fallback: ClipboardItem API
+      if (!ok) {
+        try {
+          if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+            var htmlBlob = new Blob([sig.innerHTML], { type: 'text/html' });
+            var textBlob = new Blob([sig.innerText], { type: 'text/plain' });
+            await navigator.clipboard.write([new ClipboardItem({ 'text/html': htmlBlob, 'text/plain': textBlob })]);
+            ok = true;
+          }
+        } catch (e) {}
       }
-      btn.textContent = ok ? 'COPIED! NOW PASTE INTO OUTLOOK' : 'SELECTED — TAP "COPY" IN THE POPUP MENU';
+      btn.textContent = ok ? 'COPIED! NOW PASTE INTO OUTLOOK' : 'COPY FAILED — SELECT THE SIGNATURE BY HAND';
       btn.style.background = '#14191c';
     }
   </scr` + `ipt>
