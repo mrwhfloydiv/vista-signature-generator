@@ -10,6 +10,13 @@
 !emotional man 3.gif
 *.webp
 IMAGES FOR  SIGNATURE/
+# Signature assets ARE tracked — they must be served from GitHub Pages at 1x
+# so that "natural size" equals "display size" and images cannot blow out.
+!assets/
+!assets/*.png
+!assets/*.gif
+!assets/*.jpg
+
 
 # Orphaned subfolder (has its own .git, not used)
 email_signature_generator_WF_2026/
