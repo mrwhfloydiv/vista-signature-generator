@@ -631,6 +631,15 @@
       color: #666;
       letter-spacing: .04em;
     }
+    /* classic-sim sets a white background and is declared after .dark-mode, so at equal specificity
+       it won and dark mode never darkened. Now that the Classic build is always on, that rule was
+       permanently masking dark mode. This combined selector outranks both. */
+    .preview-box.classic-sim.dark-mode {
+      background: #1a1a1a;
+      border-color: #4a4a4a;
+      border-top-color: #2e2e2e;
+    }
+    .preview-box.classic-sim.dark-mode::before { color: #999; }
     .preview-box.classic-sim * { border-radius: 0 !important; -webkit-border-radius: 0 !important; }
     .preview-box.classic-sim td, .preview-box.classic-sim a, .preview-box.classic-sim span {
       font-family: Arial, Helvetica, sans-serif !important;
