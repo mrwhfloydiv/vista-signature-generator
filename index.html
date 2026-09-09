@@ -642,8 +642,9 @@
     .preview-box.dark-mode td[data-field="name"] { color: #e8e8e8 !important; }
     .preview-box.dark-mode td[data-field="title"] { color: #cccccc !important; }
     .preview-box.dark-mode td[data-field="subtitle"] { color: #e89a9b !important; }
+    .preview-box.dark-mode td[data-field="disclaimer"] { color: #9aa0a6 !important; }
     .preview-box.dark-mode td[style*="font-weight:700"][style*="padding:3px"] { color: #cccccc !important; }
-    .preview-box.dark-mode td[colspan="5"][style*="italic"] { color: #e89a9b !important; }
+    .preview-box.dark-mode td[colspan="3"][style*="italic"] { color: #e89a9b !important; }
     .preview-box.dark-mode td[width="18"][height="18"] { background-color: #e0e0e0 !important; color: #1a1a1a !important; }
     .preview-box.dark-mode td[width="18"][height="18"] span,
     .preview-box.dark-mode td[width="18"][height="18"] a { color: #1a1a1a !important; }
@@ -824,26 +825,32 @@
             <input type="text" id="linkedinDisplay" value="linkedin.com/in/whfiv/" oninput="updatePreview(); updateMetaHints();">
             <div class="meta-hint" id="metaLinkedinDisplay"><span class="meta-label">DISPLAY:</span> shown text in signature &nbsp; <span class="meta-label">ACTION:</span> none (uses URL above)</div>
           </div>
-          <!-- Custom fields (shown for employees with custom signatures) -->
-          <div id="customFields" style="display:none;border-top:2px solid #b22c2e;padding-top:16px;margin-top:8px;">
-            <div class="note" style="background:#fff5f5;border-left-color:#b22c2e;color:#b22c2e;">
-              <b>Custom Signature Fields</b> — These fields are specific to this employee's personalized signature.
+            <div class="form-group" data-highlights="disclaimer">
+              <label>Legal Disclaimer (footer)</label>
+              <textarea id="disclaimer" rows="4" oninput="updatePreview();" placeholder="Confidentiality notice shown under the banner" style="width:100%;resize:vertical;">This email has been sent for the sole use of the intended recipient(s) and may contain private, confidential, or privileged information. If you are not the intended recipient, please advise the sender by replying to this email and delete all copies of this email. Any unauthorized review, use, disclosure, or distribution is prohibited.</textarea>
+              <div class="meta-hint" id="metaDisclaimer"><span class="meta-label">DISPLAY:</span> small grey text below the banner, full signature width<br><span class="meta-label">ACTION:</span> none — wraps automatically</div>
             </div>
-            <div class="form-group" data-highlights="name">
+          <!-- Optional fields — available to everyone. Blank ones simply don't render. -->
+          <div id="customFields" style="border-top:2px solid #b22c2e;padding-top:16px;margin-top:8px;">
+            <div class="note" style="background:#fff5f5;border-left-color:#b22c2e;color:#b22c2e;">
+              <b>Optional Lines</b> — Leave blank and they won't appear. Fill any in to add them to this signature.
+            </div>
+            <div class="form-group" data-highlights="subtitle">
               <label>Subtitle</label>
-              <input type="text" id="subtitle" value="" oninput="updatePreview();" placeholder="e.g. USA and European Union Citizenship">
+              <input type="text" id="subtitle" value="" oninput="syncLogoToContent(); updatePreview();" placeholder="e.g. USA and European Union Citizenship">
               <div class="meta-hint" id="metaSubtitle"><span class="meta-label">DISPLAY:</span> red italic line below title</div>
             </div>
-            <div class="form-group">
+            <div class="form-group" data-highlights="address">
               <label>Address Line 1</label>
-              <input type="text" id="addressLine1" value="" oninput="updatePreview();" placeholder="Street address">
+              <input type="text" id="addressLine1" value="" oninput="syncLogoToContent(); updatePreview();" placeholder="Street address">
               <div class="meta-hint" id="metaAddress"><span class="meta-label">DISPLAY:</span> bold text below subtitle</div>
             </div>
-            <div class="form-group">
+            <div class="form-group" data-highlights="address">
               <label>Address Line 2</label>
-              <input type="text" id="addressLine2" value="" oninput="updatePreview();" placeholder="City, State ZIP">
+              <input type="text" id="addressLine2" value="" oninput="syncLogoToContent(); updatePreview();" placeholder="City, State ZIP">
+              <div class="meta-hint" id="metaAddress2"><span class="meta-label">DISPLAY:</span> second bold line under the street address</div>
             </div>
-            <div class="form-group" data-highlights="banner">
+            <div class="form-group" data-highlights="tagline">
               <label>Tagline / CTA</label>
               <input type="text" id="tagline" value="" oninput="updatePreview();" placeholder='e.g. Free THE SYSTEM access below...'>
               <div class="meta-hint" id="metaTagline"><span class="meta-label">DISPLAY:</span> red italic text above banner<br><span class="meta-label">TIP:</span> use <b>|</b> for a line break (e.g. "First line|Second line")</div>
@@ -865,12 +872,12 @@
           <div class="form-group" data-highlights="logo">
             <label>Left Logo Image</label>
             <div class="file-input-row">
-              <input type="text" id="logoUrl" value="https://i.imgur.com/y7XzVKZ.png" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
+              <input type="text" id="logoUrl" value="https://mrwhfloydiv.github.io/vista-signature-generator/assets/logo-standard.png" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
               <button class="btn-browse" onclick="browseFile('logoUrl')">Browse</button>
             </div>
             <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'logoUrl')">
             <div class="img-thumb-row" id="logoThumbRow">
-              <img class="img-thumb" id="logoThumb" src="https://i.imgur.com/y7XzVKZ.png" alt="Logo preview">
+              <img class="img-thumb" id="logoThumb" src="https://mrwhfloydiv.github.io/vista-signature-generator/assets/logo-standard.png" alt="Logo preview">
               <span class="img-thumb-label">Logo preview</span>
             </div>
             <div class="meta-hint" id="metaLogo"><span class="meta-label">DISPLAY:</span> left column image (80px wide)<br><span class="meta-label">ACTION:</span> links to website<br><span class="meta-label">RECOMMENDED:</span> 584 x 1138px (1:2 ratio, tall rectangle)</div>
@@ -878,12 +885,12 @@
           <div class="form-group" data-highlights="banner">
             <label>Banner Image</label>
             <div class="file-input-row">
-              <input type="text" id="bannerUrl" value="https://i.imgur.com/NJCi1mt.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
+              <input type="text" id="bannerUrl" value="https://mrwhfloydiv.github.io/vista-signature-generator/assets/banner.gif" oninput="updatePreview(); updateThumbs(); updateMetaHints();">
               <button class="btn-browse" onclick="browseFile('bannerUrl')">Browse</button>
             </div>
             <input type="file" id="bannerFile" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'bannerUrl')">
             <div class="img-thumb-row" id="bannerThumbRow">
-              <img class="img-thumb" id="bannerThumb" src="https://i.imgur.com/NJCi1mt.gif" alt="Banner preview">
+              <img class="img-thumb" id="bannerThumb" src="https://mrwhfloydiv.github.io/vista-signature-generator/assets/banner.gif" alt="Banner preview">
               <span class="img-thumb-label">Banner preview</span>
             </div>
             <label style="margin-top:12px;">Banner Link URL</label>
@@ -1155,7 +1162,8 @@
         subtitle:        $('subtitle') ? $('subtitle').value : '',
         addressLine1:    $('addressLine1') ? $('addressLine1').value : '',
         addressLine2:    $('addressLine2') ? $('addressLine2').value : '',
-        tagline:         $('tagline') ? $('tagline').value : ''
+        tagline:         $('tagline') ? $('tagline').value : '',
+        disclaimer:      $('disclaimer') ? $('disclaimer').value : ''
       };
     }
 
@@ -1193,13 +1201,11 @@
       return `
         <tr ${fieldName ? `data-field="${fieldName}"` : ''}>
           <td width="18" style="padding-bottom:${pb}px;" valign="middle">
-            <a href="${safeHref}"${target} style="text-decoration:none !important;border:0;color:#ffffff !important;">
-              <table cellpadding="0" cellspacing="0" border="0"><tr>
-                <td width="18" height="18" bgcolor="${currentIconColor}" style="background-color:${currentIconColor};color:#ffffff !important;font-size:${fontSize}px;${isBold ? 'font-weight:bold;' : ''}font-family:Arial,sans-serif;text-align:center;line-height:18px;mso-line-height-rule:exactly;border-radius:${currentIconRadius};" align="center">
-                  <span style="color:#ffffff !important;text-decoration:none !important;">${iconChar}</span>
-                </td>
-              </tr></table>
-            </a>
+            <table cellpadding="0" cellspacing="0" border="0"><tr>
+              <td width="18" height="18" bgcolor="${currentIconColor}" style="background-color:${currentIconColor};color:#ffffff !important;font-size:${fontSize}px;${isBold ? 'font-weight:bold;' : ''}font-family:Arial,sans-serif;text-align:center;line-height:18px;mso-line-height-rule:exactly;border-radius:${currentIconRadius};" align="center">
+                <a href="${safeHref}"${target} style="text-decoration:none !important;border:0;color:#ffffff !important;"><span style="color:#ffffff !important;text-decoration:none !important;">${iconChar}</span></a>
+              </td>
+            </tr></table>
           </td>
           <td height="18" style="padding:0 0 ${pb}px 8px;vertical-align:middle;height:18px;line-height:18px;" valign="middle">
             ${content}
@@ -1219,21 +1225,25 @@
       // UTM campaign slug derived from employee name (e.g. "william-floyd")
       const utmCampaign = slugify(v.name);
 
-      // Logo dimensions — standard: 160×312 source → 80×156 display, Jeff: 160×376 source → 80×188 display
-      // mso-width/height-source:userset forces Outlook Word engine to respect our dimensions
-      const isJeff = v.logoUrl && v.logoUrl.includes('2GetQ1n');
-      const logoH = isJeff ? 188 : 156;
+      // Logo dimensions — assets are 1× (80×156 / 80×188). Natural size == display size, so if a
+      // gateway strips the size attributes the image still lands correct instead of blowing out.
+      const isTallLogo = v.logoUrl && v.logoUrl.includes('logo-jeff');
+      // Content column width in REAL PIXELS. Word resolves width="100%" against the whole
+      // table (380px) instead of the remaining space, then adds the other cells on top —
+      // which rendered the signature at 482px. Explicit px is the only safe form.
+      const contentW = v.sigWidth - 80 - 10 - 2 - 10;
+      const logoH = isTallLogo ? 188 : 156;
       const logoImg = v.logoUrl
         ? `<img src="${esc(v.logoUrl)}" width="80" height="${logoH}" style="display:block;border:0;width:80px;height:${logoH}px;mso-width-source:userset;mso-height-source:userset;" alt="Vista Site Selection">`
         : `<span style="color:#ffffff;font-size:48px;font-weight:bold;font-family:Arial,sans-serif;">V</span>`;
 
-      // Banner: 760×98 natural (2× retina) → displayed at sigWidth
+      // Banner: 380×49 natural 1× — same aspect, so this stays correct at any sigWidth
       const bannerH = Math.round(v.sigWidth * 98 / 760);
       const bannerHtml = v.bannerUrl
         ? `
   <tr>
-    <td colspan="5" data-field="banner" style="padding-top:12px;">
-      <a href="${esc(addUtm(v.bannerLink, utmCampaign, 'banner'))}" target="_blank" style="text-decoration:none;">
+    <td colspan="3" data-field="banner" style="padding-top:12px;padding-bottom:6px;">
+      <a href="${esc(addUtm(v.bannerLink, utmCampaign, 'banner'))}" target="_blank" style="text-decoration:none;color:${v.textColor};">
         <img src="${esc(v.bannerUrl)}" width="${v.sigWidth}" height="${bannerH}" style="display:block;border:0;width:${v.sigWidth}px;height:${bannerH}px;mso-width-source:userset;mso-height-source:userset;" alt="The System - Click for Access">
       </a>
     </td>
@@ -1254,11 +1264,23 @@
         : '';
 
       const addressRow = (v.addressLine1 || v.addressLine2)
-        ? `<tr><td style="font-size:11px;font-weight:700;color:${v.textColor || '#14191c'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.4;padding:3px 0 0 0;word-break:break-word;overflow-wrap:break-word;">${v.addressLine1 ? esc(v.addressLine1) : ''}${v.addressLine2 ? '<br>' + esc(v.addressLine2) : ''}</td></tr>`
+        ? `<tr><td data-field="address" style="font-size:11px;font-weight:700;color:${v.textColor || '#14191c'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.4;padding:3px 0 0 0;word-break:break-word;overflow-wrap:break-word;">${v.addressLine1 ? esc(v.addressLine1) : ''}${v.addressLine2 ? '<br>' + esc(v.addressLine2) : ''}</td></tr>`
         : '';
 
       const taglineRow = v.tagline
-        ? `<tr><td colspan="5" style="padding:10px 0 0 0;font-size:11px;font-style:italic;color:${v.nameColor || '#b22c2e'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.5;word-break:break-word;overflow-wrap:break-word;">${esc(v.tagline).replace(/\|/g, '<br>')}</td></tr>`
+        ? `<tr><td colspan="3" data-field="tagline" style="padding:10px 0 0 0;font-size:11px;font-style:italic;color:${v.nameColor || '#b22c2e'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.5;word-break:break-word;overflow-wrap:break-word;">${esc(v.tagline).replace(/\|/g, '<br>')}</td></tr>`
+        : '';
+
+      // Legal disclaimer footer — sits under the banner at full signature width and wraps.
+      // NOTE: do NOT put an explicit width on this cell. colspan=3 already spans the table, and
+      // an explicit width on a colspan cell makes Word redistribute columns — measured to collapse
+      // the 2px red divider to 0px.
+      // Per-person (Matt has one, Jeff does not) so it lives in the employee record.
+      const disclaimerRow = v.disclaimer
+        ? `
+  <tr>
+    <td colspan="3" data-field="disclaimer" style="padding:8px 0 0 0;font-size:9px;color:#8a8f94;font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.45;text-align:left;">${esc(v.disclaimer)}</td>
+  </tr>`
         : '';
 
       // MSO conditional wrapper — ALWAYS included because recipients may be on any Outlook version.
@@ -1271,16 +1293,14 @@
 
       return `${msoOpen}<table cellpadding="0" cellspacing="0" border="0" data-field="wrapper" style="max-width:${v.sigWidth}px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;" width="${v.sigWidth}">
   <tr>
-    <td valign="top" data-field="logo" style="width:80px;padding:0;">
-      <a href="${esc(addUtm('https://' + v.websiteUrl, utmCampaign, 'logo'))}" target="_blank" style="text-decoration:none;border:0;">
+    <td valign="top" data-field="logo" width="80" style="width:80px;padding:0 10px 0 0;">
+      <a href="${esc(addUtm('https://' + v.websiteUrl, utmCampaign, 'logo'))}" target="_blank" style="text-decoration:none;border:0;color:${v.nameColor};">
         ${logoImg}
       </a>
     </td>
-    <td width="10" valign="top" style="width:10px;font-size:0;line-height:0;${msoLH}padding:0;"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="10" height="1" style="display:block;width:10px;height:1px;vertical-align:top;" alt=""></td>
-    <td width="2" bgcolor="${v.barColor}" style="background-color:${v.barColor};width:2px;padding:0;font-size:0;line-height:0;"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="2" height="${logoH}" style="display:block;width:2px;height:${logoH}px;vertical-align:top;" alt=""></td>
-    <td width="10" valign="top" style="width:10px;font-size:0;line-height:0;${msoLH}padding:0;"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="10" height="1" style="display:block;width:10px;height:1px;vertical-align:top;" alt=""></td>
-    <td valign="top" width="100%" style="padding:0;width:100%;">
-      <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <td width="2" bgcolor="${v.barColor}" style="background-color:${v.barColor};width:2px;padding:0;font-size:1px;line-height:1px;${msoLH}">&nbsp;</td>
+    <td valign="top" width="${contentW}" style="padding:0 0 0 10px;width:${contentW}px;">
+      <table cellpadding="0" cellspacing="0" border="0" width="${contentW}" style="width:${contentW}px;">
         <tr>
           <td valign="top" data-field="name" style="padding:4px 0 0 0;font-size:18px;font-weight:800;color:${v.nameColor};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.2;word-break:break-word;overflow-wrap:break-word;">
             ${esc(v.name)}
@@ -1295,7 +1315,7 @@
         ${addressRow}
         <tr>
           <td valign="bottom" style="padding:2px 0 0 0;">
-            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <table cellpadding="0" cellspacing="0" border="0" width="${contentW}" style="width:${contentW}px;">
               ${iconRow('phone', v.phone, 'tel:+1' + v.phone.replace(/\./g, ''), v.phone, { field: 'phone' })}
               ${iconRow('email', v.email, 'mailto:' + v.email, v.email, { field: 'email' })}
               ${iconRow('web', v.websiteUrl, addUtm('https://' + v.websiteUrl, utmCampaign, 'website'), v.websiteUrl, { last: websiteLast, field: 'website' })}
@@ -1305,7 +1325,7 @@
         </tr>
       </table>
     </td>
-  </tr>${taglineRow}${bannerHtml}
+  </tr>${taglineRow}${bannerHtml}${disclaimerRow}
 </table>${msoClose}`;
     }
 
@@ -1622,12 +1642,27 @@
       showToast('Downloaded! Copy to %appdata%\\Microsoft\\Signatures\\');
     }
 
+    // Company-wide confidentiality footer. Applied to EVERY employee; an employee record
+    // may override it with its own `disclaimer` value.
+    const DEFAULT_DISCLAIMER = "This email has been sent for the sole use of the intended recipient(s) and may contain private, confidential, or privileged information. If you are not the intended recipient, please advise the sender by replying to this email and delete all copies of this email. Any unauthorized review, use, disclosure, or distribution is prohibited.";
+
+    // Logo height follows content. Two assets only — the standard 80x156 and the taller 80x188
+    // Jeff already uses. Subtitle and Address live inside the content column and push it past 156px,
+    // so either one selects the tall logo. Tagline is its own full-width row and does not.
+    const LOGO_STD  = 'https://mrwhfloydiv.github.io/vista-signature-generator/assets/logo-standard.png';
+    const LOGO_TALL = 'https://mrwhfloydiv.github.io/vista-signature-generator/assets/logo-jeff.png';
+    function syncLogoToContent() {
+      const needsTall = !!($('subtitle').value.trim() || $('addressLine1').value.trim() || $('addressLine2').value.trim());
+      $('logoUrl').value = needsTall ? LOGO_TALL : LOGO_STD;
+      updateThumbs();
+    }
+
     // ── Employee Directory ──
     const employees = [
       { name: "Matt Samler", title: "Managing Partner &|Executive Managing Director", email: "MTSamler@VistaSiteSelection.com", phone: "214.583.6899", linkedin: "https://www.linkedin.com/in/matthewsamler" },
       { name: "Chris Magill", title: "Partner & Senior Managing Director", email: "cjmagill@vistasiteselection.com", phone: "614.464.6295", linkedin: "https://www.linkedin.com/in/chrismagill" },
       { name: "Evan Stair", title: "Partner & Senior Managing Director", email: "elstair@vistasiteselection.com", phone: "972.603.5947", linkedin: "https://www.linkedin.com/in/elsdata/" },
-      { name: "Jeff Troan", title: "Sr Managing Dir / Partner / Founder", email: "gjtroan@vistasiteselection.com", phone: "407.413.6799", linkedin: "https://www.linkedin.com/in/geoffrey-troan-637b60a/", customName: "Geoffrey (Jeff) J. Troan", subtitle: "USA and European Union Citizenship", address: "52 East Gay Street\nColumbus, OH 43215", tagline: '“Test the strength of your laborshed.”|Free THE SYSTEM access below…', isCustom: true },
+      { name: "Jeff Troan", title: "Sr Managing Dir / Partner / Founder", email: "gjtroan@vistasiteselection.com", phone: "407.413.6799", linkedin: "https://www.linkedin.com/in/geoffrey-troan-637b60a/", customName: "Geoffrey (Jeff) J. Troan", subtitle: "USA and European Union Citizenship", address: "52 East Gay Street\nColumbus, OH 43215", tagline: '“Test the strength of your laborshed.”|Free THE SYSTEM access below…', isCustom: true, logo: 'jeff' },
       { name: "James Maples, PhD", title: "Lead Economist", email: "jnmaples@vistasiteselection.com", phone: "865.254.6395", linkedin: "https://www.linkedin.com/in/james-maples/" },
       { name: "Julie Miller", title: "Managing Director &|Head of Incentives Compliance", email: "jmmiller@vistasiteselection.com", phone: "972.352.1940", linkedin: "https://www.linkedin.com/in/julie-miller-ccip/" },
       { name: "Andrea Dishler", title: "Senior Vice President, Project Management", email: "adishler@vistasiteselection.com", phone: "202.448.1492", linkedin: "https://www.linkedin.com/in/andrea-dishler/" },
@@ -1666,22 +1701,17 @@
       const liDisplay = liUrl.replace(/^https?:\/\/(www\.)?/, '');
       $('linkedinDisplay').value = liDisplay.endsWith('/') ? liDisplay : (liDisplay ? liDisplay + '/' : '');
 
-      // Custom fields + logo swap
-      if (emp.isCustom) {
-        $('customFields').style.display = '';
-        $('subtitle').value = emp.subtitle || '';
-        $('addressLine1').value = (emp.address || '').split('\n')[0] || '';
-        $('addressLine2').value = (emp.address || '').split('\n')[1] || '';
-        $('tagline').value = emp.tagline || '';
-        $('logoUrl').value = 'https://i.imgur.com/2GetQ1n.png';
-      } else {
-        $('customFields').style.display = 'none';
-        $('subtitle').value = '';
-        $('logoUrl').value = 'https://i.imgur.com/y7XzVKZ.png';
-        $('addressLine1').value = '';
-        $('addressLine2').value = '';
-        $('tagline').value = '';
-      }
+      // Optional lines — available to EVERY employee, not just custom ones. The panel is
+      // always visible; a blank field simply renders no row. Values seed from the record.
+      $('subtitle').value = emp.subtitle || '';
+      $('addressLine1').value = (emp.address || '').split('\n')[0] || '';
+      $('addressLine2').value = (emp.address || '').split('\n')[1] || '';
+      $('tagline').value = emp.tagline || '';
+      // Everyone gets the confidentiality footer unless their record overrides it.
+      $('disclaimer').value = emp.disclaimer || DEFAULT_DISCLAIMER;
+      // Logo follows content, not a per-person flag: anyone with a subtitle or address gets the
+      // tall logo automatically. Jeff lands on it because he has both, not because he is special.
+      syncLogoToContent();
 
       // Highlight active card
       document.querySelectorAll('.emp-card').forEach(c => c.classList.remove('active'));
