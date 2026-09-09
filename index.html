@@ -1232,6 +1232,10 @@
     let currentIconColor = '#14191c';
 
     function buildSignatureHTML(v, mode) {
+      // SINGLE_BUILD means every entry point emits the same Word-safe markup, whichever one asked.
+      // Without this, the preview, Copy HTML, Download and Mobile Copy silently produced the
+      // rounded-chip build while only the Copy button produced the validated one.
+      if (typeof SINGLE_BUILD !== 'undefined' && SINGLE_BUILD) mode = 'classic';
       const classic = (mode === 'classic');
       currentTextColor = v.textColor || '#14191c';
       currentIconColor = v.iconColor || '#14191c';
@@ -1413,10 +1417,16 @@
       return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
 
+    // Every output path ships exactly the same markup. cleanForWord also strips the data-* markers
+    // the live preview needs for highlighting, which is why the preview does NOT go through this.
+    function buildForOutput(v) {
+      return cleanForWord(buildSignatureHTML(v, 'classic'));
+    }
+
     // ── Copy Functions ──
     function copyHTML() {
       const v = getValues();
-      const html = buildSignatureHTML(v);
+      const html = buildForOutput(v);
       navigator.clipboard.writeText(html).then(() => showToast('HTML code copied!'));
     }
 
@@ -1505,7 +1515,7 @@
       const win = window.open('', '_blank');
       if (win) win.document.write('<p style="font-family:Arial,sans-serif;padding:24px;">Preparing your signature &mdash; embedding images&hellip;</p>');
       const v = getValues();
-      let html = buildSignatureHTML(v);
+      let html = buildForOutput(v);
       // Embed image data BEFORE building the page — phone editors strip remote images,
       // so the copied HTML must carry the actual pixels.
       showToast('Embedding images for mobile — one sec…');
@@ -1627,7 +1637,7 @@
 
     function downloadHTML() {
       const v = getValues();
-      const html = buildSignatureHTML(v);
+      const html = buildForOutput(v);
       const doc = `<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title>Signature — ${esc(v.name)}</title>\n</head>\n<body style="margin:0;padding:20px;">\n${html}\n</body>\n</html>`;
       const blob = new Blob([doc], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
@@ -1643,7 +1653,7 @@
 
     function installClassicOutlook() {
       const v = getValues();
-      const html = cleanForWord(buildSignatureHTML(v, 'classic'));
+      const html = buildForOutput(v);
       const sigName = v.name.replace(/[^a-zA-Z0-9 ]/g, '').trim();
       const doc = '<!DOCTYPE html>\n<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">\n<head>\n<meta charset="UTF-8">\n<meta name="Generator" content="Microsoft Word 15">\n<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->\n</head>\n<body style="margin:0;padding:0;">\n' + html + '\n</body>\n</html>';
       const blob = new Blob([doc], { type: 'text/html' });
