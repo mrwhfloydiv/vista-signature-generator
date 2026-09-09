@@ -840,12 +840,12 @@
               <input type="text" id="subtitle" value="" oninput="syncLogoToContent(); updatePreview();" placeholder="e.g. USA and European Union Citizenship">
               <div class="meta-hint" id="metaSubtitle"><span class="meta-label">DISPLAY:</span> red italic line below title</div>
             </div>
-            <div class="form-group" data-highlights="address">
+            <div class="form-group" data-highlights="addressLine1">
               <label>Address Line 1</label>
               <input type="text" id="addressLine1" value="" oninput="syncLogoToContent(); updatePreview();" placeholder="Street address">
               <div class="meta-hint" id="metaAddress"><span class="meta-label">DISPLAY:</span> bold text below subtitle</div>
             </div>
-            <div class="form-group" data-highlights="address">
+            <div class="form-group" data-highlights="addressLine2">
               <label>Address Line 2</label>
               <input type="text" id="addressLine2" value="" oninput="syncLogoToContent(); updatePreview();" placeholder="City, State ZIP">
               <div class="meta-hint" id="metaAddress2"><span class="meta-label">DISPLAY:</span> second bold line under the street address</div>
@@ -1085,6 +1085,9 @@
 
     function addUtm(url, campaign, content) {
       if (!url) return url;
+      // Outlook inserts the path slash itself (example.com?x -> example.com/?x), which made the
+      // delivered href differ from the source by one character in click logs. Emit it up front.
+      url = url.replace(/^(https?:\/\/[^/?#]+)(?=$|[?#])/, '$1/');
       const sep = url.includes('?') ? '&' : '?';
       return url + sep + 'utm_source=email&utm_medium=signature&utm_campaign=' + encodeURIComponent(campaign) + '&utm_content=' + encodeURIComponent(content);
     }
@@ -1264,7 +1267,7 @@
         : '';
 
       const addressRow = (v.addressLine1 || v.addressLine2)
-        ? `<tr><td data-field="address" style="font-size:11px;font-weight:700;color:${v.textColor || '#14191c'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.4;padding:3px 0 0 0;word-break:break-word;overflow-wrap:break-word;">${v.addressLine1 ? esc(v.addressLine1) : ''}${v.addressLine2 ? '<br>' + esc(v.addressLine2) : ''}</td></tr>`
+        ? `<tr><td data-field="address" style="font-size:11px;font-weight:700;color:${v.textColor || '#14191c'};font-family:'Montserrat',Arial,Helvetica,sans-serif;line-height:1.4;padding:3px 0 0 0;word-break:break-word;overflow-wrap:break-word;">${v.addressLine1 ? `<span data-field="addressLine1">${esc(v.addressLine1)}</span>` : ''}${v.addressLine2 ? `<br><span data-field="addressLine2">${esc(v.addressLine2)}</span>` : ''}</td></tr>`
         : '';
 
       const taglineRow = v.tagline
@@ -1293,7 +1296,7 @@
 
       return `${msoOpen}<table cellpadding="0" cellspacing="0" border="0" data-field="wrapper" style="max-width:${v.sigWidth}px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;" width="${v.sigWidth}">
   <tr>
-    <td valign="top" data-field="logo" width="80" style="width:80px;padding:0 10px 0 0;">
+    <td valign="top" data-field="logo" width="80" style="width:80px;padding:0 10px 0 0;font-size:0;line-height:0;">
       <a href="${esc(addUtm('https://' + v.websiteUrl, utmCampaign, 'logo'))}" target="_blank" style="text-decoration:none;border:0;color:${v.nameColor};">
         ${logoImg}
       </a>
@@ -1780,7 +1783,12 @@
       'textColor': '[data-field="title"], [data-field="phone"] [data-text], [data-field="email"] [data-text], [data-field="website"] [data-text], [data-field="linkedin"] [data-text]',
       'iconColor': 'td[width="18"][height="18"]',
       'iconColorHex': 'td[width="18"][height="18"]',
-      'barColorHex': 'td[width="2"]'
+      'barColorHex': 'td[width="2"]',
+      'subtitle': '[data-field="subtitle"]',
+      'addressLine1': '[data-field="addressLine1"]',
+      'addressLine2': '[data-field="addressLine2"]',
+      'tagline': '[data-field="tagline"]',
+      'disclaimer': '[data-field="disclaimer"]'
     };
 
     let activeField = null;
